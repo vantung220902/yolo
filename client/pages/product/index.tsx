@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BsFillEmojiLaughingFill } from 'react-icons/bs'
 import { useDispatch, useSelector } from 'react-redux'
-import { getProductFromCategory, loadMore } from '../../actions/product'
+import { getProductFromCategory, getProductFromColor, loadMore } from '../../actions/product'
 import { getCategoriesApi } from '../../api/categoryApi'
 import { getProducts } from '../../api/productApi'
 import Layout from '../../components/Layout'
@@ -13,31 +13,42 @@ import { ResponseListCategory } from '../../types/Category'
 import { ResponseListProduct } from '../../types/Product'
 import { IRootReducers } from '../../types/typeReducers'
 
+
+
 const Category = ({ products, categories }: { products: ResponseListProduct, categories: ResponseListCategory }) => {
   const data = useSelector((state: IRootReducers) => state.product);
+
   const dispatch = useDispatch();
   //state for filter
   const [filter, setFilter] = useState(0);
   const [idFilter, setIdFilter] = useState(0);
- //limit for number product return
+  const [colorFilter, setColorFilter] = useState('all');
+  //limit for number product return
   const [limit, setLimit] = useState(6);
+
+  //ref
+  const inputRef = useRef([]);
   //dispatch action to redux and redux-saga
   const dispatchLoadMore = () => dispatch(loadMore({ limit, cursor: data.products.length > 1 ? data.cursor : products.cursor }))
-  const dispatchGetProductFromCategory = (id: number) => dispatch(getProductFromCategory({ limit, id, cursor: data.products.length > 1 ? data.cursor : undefined }))
+  const dispatchGetProductFromCategory = (id: number) => dispatch(getProductFromCategory({ limit, cursor: data.products.length > 1 ? data.cursor : undefined, id }))
+  const dispatchGetProductFromColor = (color: string) => dispatch(getProductFromColor({ limit, cursor: data.products.length > 1 ? data.cursor : undefined, color }))
 
   useEffect(() => {
+    const height = screen.height;
     const handleScroll = () => {
-      if (document.body.scrollTop > 650 || document.documentElement.scrollTop > 650 && data.hasMore) {
+      console.log(document.documentElement.scrollTop);
+      if (document.body.scrollTop > (height / 3) || document.documentElement.scrollTop > (height / 3) && data.hasMore) {
         switch (filter) {
           case 0:
             dispatchLoadMore();
-            setFilter(0);
             break;
           case 1:
             dispatchGetProductFromCategory(idFilter)
             break;
+          case 2:
+            dispatchGetProductFromColor(colorFilter);
+            break;
         }
-
         setLimit(pre => {
           return pre + 3;
         })
@@ -47,7 +58,6 @@ const Category = ({ products, categories }: { products: ResponseListProduct, cat
     return () => window.removeEventListener('scroll', handleScroll)
   }, [filter])
 
-
   const filterCategory = (id: number) => {
     if (id !== 0) {
       dispatchGetProductFromCategory(id);
@@ -56,6 +66,24 @@ const Category = ({ products, categories }: { products: ResponseListProduct, cat
     } else {
       setFilter(0);
     }
+  }
+  const filterColor = (color: string) => {
+    if (color !== 'all') {
+      dispatchGetProductFromColor(color);
+      setFilter(2);
+      setColorFilter(color);
+    } else {
+      setFilter(0);
+    }
+  }
+  const clearFilter = () => {
+    setFilter(0);
+    setIdFilter(0);
+    setColorFilter('all');
+    const inputs = document.querySelectorAll<HTMLInputElement>('input[type=radio]')
+    inputs.forEach(el => {
+      el.checked = false
+    })
   }
   return (
     <Layout>
@@ -69,12 +97,13 @@ const Category = ({ products, categories }: { products: ResponseListProduct, cat
                 h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600
                 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top
                 bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer" type="radio" name='checkCategory'
+
                   onClick={() => {
                     filterCategory(0);
                   }} />
                 <p className='text-[#C0C6C8] font-medium'>All</p>
               </li>
-              {categories.categories.map(item => {
+              {categories.categories.map((item, index) => {
                 return (<li className='flex items-center mb-1' key={item.id}>
                   <input className="form-check-input appearance-none 
                 h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600
@@ -97,15 +126,19 @@ const Category = ({ products, categories }: { products: ResponseListProduct, cat
                 h-4 w-4 border border-gray-300 rounded-sm bg-white
                  checked:bg-blue-600 checked:border-blue-600 focus:outline-none
                  transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain
-                 float-left mr-2 cursor-pointer" type="radio" name='checkColor' />
-                <p className='text-[#C0C6C8] font-medium'>All</p>
+                 float-left mr-2 cursor-pointer" type="radio" name='checkColor' onClick={() => {
+                    filterColor('all');
+                  }} />
+                <p className='text-[#C0C6C8] font-medium' >All</p>
               </li>
               {listColor.map((item, index) => {
                 return (<li className='flex items-center mb-1' key={index}>
                   <input className="form-check-input appearance-none h-4 w-4 border border-gray-300 
                   rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none
                   transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2
-                  cursor-pointer" type="radio" name='checkColor' />
+                  cursor-pointer" type="radio" name='checkColor' onClick={() => {
+                      filterColor(item);
+                    }} />
                   <p className='text-[#C0C6C8] font-medium'>{item}</p>
                 </li>)
               })}
@@ -133,7 +166,7 @@ const Category = ({ products, categories }: { products: ResponseListProduct, cat
               })}
             </ul>
           </div>
-          <button className='btn mt-4'>
+          <button className='btn mt-4' onClick={clearFilter}>
             Delete Filter
           </button>
         </div>

@@ -10,7 +10,7 @@ interface ILayoutProps {
     return (
         <div className='mx-8 my-16 h-screen w-screen '>
             <Navbar  />
-            <div className='mt-40 mx-12'>
+            <div className='mt-44 mx-12'>
                 {children}
                 <Footer />
             </div>

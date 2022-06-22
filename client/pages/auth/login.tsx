@@ -38,7 +38,7 @@ const Login = ({ auth, login }: IPropsLogin) => {
     const [error, setError] = useState<{ [key: string]: string }>({});
     const onLogin = async (values: LoginInput) => {
         login(values);
-    }
+    };
     useEffect(() => {
         if (auth.error) {
             setError(mapFieldErrors(auth.error));

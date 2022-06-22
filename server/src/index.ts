@@ -1,3 +1,4 @@
+import { Cart } from './entities/Cart';
 import { Category } from './entities/Category';
 import { Product } from './entities/Product';
 require('dotenv').config()
@@ -19,10 +20,10 @@ const main = async () => {
         password: process.env.DB_PASSWORD,
         logging: true,
         synchronize: true,
-        entities: [User,Product,Category]
+        entities: [User,Product,Category,Cart]
     })
     const app = express()
-
+    
     app.use(morgan('dev'));
     app.use(cors({ origin: 'http://localhost:3000', credentials: true }))
     app.use(cookieParser());

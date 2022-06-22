@@ -1,4 +1,4 @@
-export const LOGIN = 'LOGIN'
+export const LOGIN = 'SIGN_IN'
 export const AUTH_SUCCESS = 'AUTH_SUCCESS'
 export const REGISTER = 'REGISTER'
 export const LOGOUT = 'LOGOUT'

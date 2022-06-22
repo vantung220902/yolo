@@ -11,5 +11,4 @@ export class Category extends BaseEntity {
 
     @OneToMany(() => Product, product => product.category)
     product: Product[]
-
 }

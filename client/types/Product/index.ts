@@ -11,7 +11,13 @@ export interface IProduct {
     userId: number;
     image: string;
 }
-
+export class ResponseProduct implements IResponse {
+    code!: number;
+    success!: boolean;
+    message?: string | undefined;
+    product?: IProduct;
+    error?: FieldError[];
+}
 
 export class ResponseListProduct implements IResponse {
     code!: number;
@@ -24,6 +30,7 @@ export class ResponseListProduct implements IResponse {
     error?: FieldError[];
 
 }
+
 export interface IPayloadProductAction {
     limit: number, cursor: Date | undefined
 }

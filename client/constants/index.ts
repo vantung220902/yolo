@@ -28,4 +28,5 @@ export const sliderData = [
     }
 ]
 export const listColor = ['red', 'green', 'white', 'pink', 'yellow', 'orange', 'blue', 'brown', 'violet']
+export const listColor2 = ['red', 'green', 'white', 'pink']
 export const listSize = ['S','m','l','xl','xxl']

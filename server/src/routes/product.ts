@@ -9,6 +9,8 @@ router.post('/add', checkAuth,storage.array('images', 2), Product.addProduct);
 
 router.get('/gets', Product.listProducts);
 
+router.get('/getByColor', Product.getProductsFromColor);
+
 router.get('/getById', Product.getProductById);
 
 export default router;

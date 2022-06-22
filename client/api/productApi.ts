@@ -17,10 +17,11 @@ export const getProductIds = async () => {
     }))
 }
 
-export const getProductById = async (id: string) => {
-    return AxiosService.get(`${API_END_POINT}product/getById?id=${id}`, {
-        headers: {
-            Authorization: `Bearer ${localStorage.getItem(ACCESS_TOKEN)}`,
-        }
-    })
+export const getProductByIdApi = async (id: string) => {
+    return AxiosService.get(`${API_END_POINT}product/getById?id=${id}`)
+}
+export const getProductFromColorApi = async (color: string, limit: number, cursor = null) => {
+    if (cursor)
+        return AxiosService.get(`${API_END_POINT}product/getByColor?color=${color}&limit=${limit}&cursor=${cursor}`)
+    return AxiosService.get(`${API_END_POINT}product/getByColor?color=${color}&limit=${limit}`)
 }

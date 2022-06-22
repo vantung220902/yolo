@@ -14,8 +14,8 @@ export interface IProductReducer {
     totalCount: number,
     cursor: Date,
     hasMore: boolean,
-    products: IProduct[]
-
+    products: IProduct[],
+    product:IProduct | undefined
 }
 
 export interface IRootReducers {
