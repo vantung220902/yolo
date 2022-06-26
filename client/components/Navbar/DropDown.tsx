@@ -4,9 +4,9 @@ import { ChevronDownIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
 import Avatar from '../../assets/avatar.jpg'
 import Image from 'next/image'
-import { IMe } from "../../types/Auth";
+import { IMe } from "../../redux/authRedux/type";
 import { useDispatch } from "react-redux";
-import { logout } from "../../actions/auth";
+import { logoutAsync } from "../../redux/authRedux/actions";
 
 export interface IPropDrop {
     user: IMe | undefined
@@ -16,7 +16,7 @@ export default function Dropdown({ user }: IPropDrop) {
 
     const dispatch = useDispatch()
 
-    const logoutDispatch = () => dispatch(logout());
+    const logoutDispatch = () => dispatch(logoutAsync.success());
 
     return (
         <Menu as="div" className="w-24 h-12 relative flex items-center z-100">

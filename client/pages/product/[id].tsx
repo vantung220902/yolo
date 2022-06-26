@@ -1,16 +1,16 @@
-import { AxiosResponse } from 'axios'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 import { useDispatch, useSelector } from 'react-redux'
-import { getProductById, getProductByIdSuccess } from '../../actions/product'
-import { getProductByIdApi, getProductIds } from '../../api/productApi'
 import Layout from '../../components/Layout'
-import { listSize } from '../../constants'
-import { defaultSize } from '../../constants/ui'
-import { ResponseProduct } from '../../types/Product'
-import { ResponseGenerator } from '../../types/responseType'
-import { IRootReducers } from '../../types/typeReducers'
+import { getProductByIdAsync } from '../../redux/productRedux/actions'
+import { ResponseProduct } from '../../redux/productRedux/type'
+import { IRootReducers } from '../../redux/rootReducer'
+import { API } from '../../services'
+import { listSize } from '../../services/localData'
+import { defaultSize } from '../../services/ui'
+
+const { getProductIds, getProductById } = API.create();
 
 const ProductPage = ({ product }: { product: string | ResponseProduct }) => {
   const [number, setNumber] = useState(1);
@@ -27,7 +27,7 @@ const ProductPage = ({ product }: { product: string | ResponseProduct }) => {
   useEffect(() => {
     if (typeof product === 'string') {
       const productParse: ResponseGenerator = JSON.parse(product);
-      dispatch(getProductByIdSuccess(productParse.data.product));
+      dispatch(getProductByIdAsync.success(productParse.data.product));
       const tmpImages = [];
       const listImage = productParse.data.product?.image.split(';');
       for (let i = 0; i < listImage.length - 1; i++) {
@@ -35,7 +35,7 @@ const ProductPage = ({ product }: { product: string | ResponseProduct }) => {
       }
       setImages(tmpImages);
     } else if (!isNaN(id)) {
-      dispatch(getProductById(id));
+      dispatch(getProductByIdAsync.request({ id }));
     }
   }, [id])
   if (!data) return (<div className="flex items-center justify-center ">
@@ -159,7 +159,7 @@ export const getStaticPaths = async () => {
 }
 
 export const getStaticProps = async ({ params }: { params: { id: string } }) => {
-  const data: AxiosResponse<ResponseProduct, ResponseProduct> = await getProductByIdApi(params.id);
+  const data = await getProductById(params.id);
   const product = await JSON.stringify(data, getCircularReplacer())
   return {
     props: {

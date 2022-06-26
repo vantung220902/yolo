@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { memo } from 'react';
 import { BsCart } from "react-icons/bs";
-import { defaultSize } from '../../constants/ui';
-import { IProduct } from '../../types/Product';
+import { defaultSize } from '../../services/ui';
+import { IProduct } from '../../redux/productRedux/type';
 const Product = ({ product }: { product: IProduct }) => {
   const images = product.image.split(";");
   return (

@@ -1,9 +1,9 @@
-import { Product } from './../entities/Product';
-import { validateProductInput } from './../utils/validateInputProduct';
-import { ProductInput, ResponseListProduct, ResponseProduct } from './../types/ProductType';
 import { Request, Response } from "express";
-import cloudinaryImageUploadMethod from '../utils/cloudinary';
 import { LessThan } from 'typeorm';
+import cloudinaryImageUploadMethod from '../utils/cloudinary';
+import { Product } from './../entities/Product';
+import { ProductInput, ResponseListProduct, ResponseProduct } from './../types/ProductType';
+import { validateProductInput } from './../utils/validateInputProduct';
 
 export class ProductController {
 
@@ -69,6 +69,18 @@ export class ProductController {
             const { limit, cursor } = req.query;
             const totalCount = await Product.count();
             const realLimit = Math.min(10, parseInt(limit as string, 10));
+            // const searches = [
+            //     {
+            //         title: Like(`%${search}%`),
+            //     },
+            //     {
+            //         color: Like(`%${search}%`),
+            //     },
+            //     {
+            //         description: Like(`%${search}%`),
+            //     },
+
+            // ]
             const findOptions: { [key: string]: any } = {
                 order: {
                     createdAt: 'DESC'
@@ -77,7 +89,9 @@ export class ProductController {
             }
             let lastProduct: Product[] = [];
             if (cursor) {
-                findOptions.where = { createdAt: LessThan(cursor) }
+                findOptions.where = [
+                    { createdAt: LessThan(cursor) },
+                ]
                 lastProduct = await Product.find({ order: { createdAt: 'ASC' }, take: 1 });
             }
             const listProducts = await Product.find(findOptions);
@@ -103,7 +117,7 @@ export class ProductController {
     async getProductById(req: Request, res: Response): Promise<Response<ResponseProduct, Record<any, ResponseProduct>>> {
         try {
             const { id } = req.query;
-            if (!id || isNaN(parseInt(id as string,10))) {
+            if (!id || isNaN(parseInt(id as string, 10))) {
                 return res.json({
                     code: 401,
                     success: false,
@@ -150,61 +164,6 @@ export class ProductController {
             })
         }
     }
-    async getProductsFromColor(req: Request, res: Response): Promise<Response<ResponseListProduct, Record<any, ResponseListProduct>>> {
-        try {
-            const color = req.query.color as string;
-            if (!color) {
-                return res.json({
-                    code: 401,
-                    success: false,
-                    message: 'Color id',
-                    error: [
-                        {
-                            field: 'color',
-                            message: `Color is empty`
-                        }
-                    ]
 
-                })
-            }
-            const { limit, cursor } = req.query;
-            const totalCount = await Product.count();
-            const realLimit = Math.min(10, parseInt(limit as string, 10));
-            const findOptions: { [key: string]: any } = {
-                order: {
-                    createdAt: 'DESC'
-                },
-                take: realLimit
-            }
-            let lastProduct: Product[] = [];
-            if (cursor) {
-                findOptions.where = { createdAt: LessThan(cursor), color, }
-                lastProduct = await Product.find({ where: { color }, order: { createdAt: 'ASC' }, take: 1 });
-            } else {
-                findOptions.where = { color }
-            }
-            const listProducts = await Product.find(findOptions);
-            const endList = listProducts[listProducts.length - 1];
-            const endCursor = endList ? endList.createdAt : cursor
-            return res.json({
-                code: 200,
-                success: true,
-                message: 'List product from color successfully',
-                totalCount,
-                cursor: endCursor,
-                hasMore: cursor ? endCursor?.toString() !== lastProduct[0].createdAt.toString()
-                    : listProducts.length !== totalCount,
-                products: listProducts
-            })
-
-        } catch (error) {
-            console.error('ERROR', error)
-            return res.json({
-                code: 501,
-                success: false,
-                message: `Server internal error ${error.message}`,
-            })
-        }
-    }
 
 }

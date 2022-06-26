@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
-import { defaultSize } from '../constants/ui'
-import { sliderData } from '../constants'
+import { defaultSize } from '../services/ui'
+import { sliderData } from '../services/localData'
 
 const Slider = () => {
 

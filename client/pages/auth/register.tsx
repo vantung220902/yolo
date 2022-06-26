@@ -3,31 +3,24 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { AiOutlineLoading } from 'react-icons/ai';
-import { useSelector, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { register } from '../../actions/auth';
 import BG from '../../assets/bg.jpg';
 import InputField from '../../components/InputField';
-import { defaultSize } from '../../constants/ui';
-import { IAction } from '../../types/actionType';
-import { IMe, RegisterInput } from '../../types/Auth';
-import { IAuthReducer, IRootReducers } from '../../types/typeReducers';
+import { registerAsync } from '../../redux/authRedux/actions';
+import { IMe, RegisterInput } from '../../redux/authRedux/type';
+import { IRootReducers } from '../../redux/rootReducer';
+import { defaultSize } from '../../services/ui';
 import { mapFieldErrors } from '../../utils/mapFieldError';
-import { useCheckAuth } from '../../utils/useCheckAuth';
+import { useCheckAuth } from '../../hooks/useCheckAuth';
 
-export interface IPropsLogin {
-    auth: IAuthReducer,
-    register: (payload: RegisterInput) => IAction
-}
 
-const Register = () => {
+const Register: React.FC<Props> = ({ auth, register }) => {
 
     const router = useRouter();
     const [_, setData] = useState<IMe | undefined>()
-    const auth = useSelector((state: IRootReducers) => state.auth);
-    const dispatch = useDispatch();
-    const registerDispatch = (payload: RegisterInput) => dispatch(register(payload))
+
     useEffect(() => {
         const checkData = async () => {
             const fetchData = await useCheckAuth(router);
@@ -38,7 +31,7 @@ const Register = () => {
     const initialValues: RegisterInput = { username: '', email: '', password: '' };
     const [error, setError] = useState<{ [key: string]: string }>({});
     const onRegister = async (values: RegisterInput) => {
-        registerDispatch(values);
+        register(values);
     }
     useEffect(() => {
         if (auth.error) {
@@ -84,7 +77,7 @@ const Register = () => {
                         </button>
                         <div className='flex items-center justify-between'>
                             <Link className="inline-block align-baseline font-bold text-md text-blue-500
-                             hover:text-blue-800" href="/aut/login">
+                             hover:text-blue-800" href="/auth/login">
                                 Login
                             </Link>
                         </div>
@@ -96,6 +89,17 @@ const Register = () => {
 
     )
 }
+type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
 
+const mapStateToProps = (state: IRootReducers) => ({
+    auth: state.auth,
+});
 
-export default Register
+const mapDispatchToProps = {
+
+    register: registerAsync.request,
+
+};
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
+
+export default withConnect(Register)

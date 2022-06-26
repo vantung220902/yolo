@@ -1,38 +1,35 @@
 import { Form, Formik } from 'formik';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { AiOutlineLoading } from 'react-icons/ai';
 import { connect } from 'react-redux';
-import { ToastContainer,toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { bindActionCreators, Dispatch } from 'redux';
-import { login } from '../../actions/auth';
 import BG from '../../assets/bg.jpg';
 import InputField from '../../components/InputField';
-import { IAction } from '../../types/actionType';
-import { IMe, LoginInput } from '../../types/Auth';
-import { IAuthReducer, IRootReducers } from '../../types/typeReducers';
+import { defaultSize } from '../../services/ui';
+import { loginAsync } from '../../redux/authRedux/actions';
+import { IMe, LoginInput } from '../../redux/authRedux/type';
+import { IRootReducers } from '../../redux/rootReducer';
 import { mapFieldErrors } from '../../utils/mapFieldError';
-import Link from 'next/link'
-import { defaultSize } from '../../constants/ui';
-import { useCheckAuth } from '../../utils/useCheckAuth';
+import { useCheckAuth } from '../../hooks/useCheckAuth';
+import useToken from '../../hooks/useToken';
 
-export interface IPropsLogin {
-    auth: IAuthReducer,
-    login: (payload: LoginInput) => IAction
-}
-
-const Login = ({ auth, login }: IPropsLogin) => {
+const Login: React.FC<Props> = ({ auth, login }) => {
 
     const router = useRouter();
     const [_, setData] = useState<IMe | undefined>()
 
     useEffect(() => {
+
         const checkData = async () => {
             const fetchData = await useCheckAuth(router);
             if (fetchData) setData(fetchData)
         }
-        checkData();
+        if (useToken.getToken()) {
+            checkData();
+        }
     }, [])
     const initialValues: LoginInput = { usernameOrEmail: '', password: '' };
     const [error, setError] = useState<{ [key: string]: string }>({});
@@ -105,14 +102,16 @@ const Login = ({ auth, login }: IPropsLogin) => {
     )
 }
 
+type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
+
 const mapStateToProps = (state: IRootReducers) => ({
     auth: state.auth,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => {
-    return {
-        login: bindActionCreators(login, dispatch),
-    };
+const mapDispatchToProps = {
+
+    login: loginAsync.request,
+
 };
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 

@@ -1,12 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { AiOutlineDelete, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai'
 import Layout from '../components/Layout'
-import { defaultSize } from '../constants/ui'
-
+import { defaultSize } from '../services/ui'
+import { ICartLocal } from '../redux/cartRedux/type'
+import { LOCAL_CART } from '../services/cart'
 const Cart = () => {
+
+  const [carts, setCarts] = useState<ICartLocal[]>([])
+
+  useEffect(() => {
+    const data: ICartLocal[] = JSON.parse(localStorage.getItem(LOCAL_CART) as string);
+    setCarts(data);
+  }, [carts])
+
   return (
     <Layout>
-      <div className='grid grid-cols-8 space-x-4 '>
+      <div className='grid grid-cols-8 space-x-4 my-12  '>
         <div className='col-span-2 shadow-lg rounded-sm py-12 px-10'>
           <h5 className='text-normal'>You are having 1 item in cart</h5>
           <div className='flex items-center justify-between'>
@@ -22,25 +31,30 @@ const Cart = () => {
             </button>
           </div>
         </div>
-        <div className='col-span-6 grid grid-cols-6 my-auto' >
-          <div className='flex items-center'>
-            <img src={'https://res.cloudinary.com/the-roap-trip/image/upload/v1655453831/b52l4mz4yiljmcsg7qom.jpg'} alt='anh' className='object-contain h-28' />
-          </div>
-          <div className='col-span-2'>
-            <p>Áo Thun Dinosaur 01 - white - s</p>
-          </div>
-          <div className='col-span-1'>
-            <p>189,000</p>
-          </div>
-          <div className='col-span-1 border-2 border-black flex items-center justify-between max-h-12 mr-8'>
-            <AiOutlineMinus size={defaultSize} />
-            <p>1</p>
-            <AiOutlinePlus size={defaultSize} />
-          </div>
-          <div className='mt-2'>
-            <AiOutlineDelete size={defaultSize} />
-          </div>
-        </div>
+        {
+          carts.map((item, index) => (
+            <div className='col-span-6 grid grid-cols-6 items-center' key={index}>
+              <div className='flex items-center'>
+                <img src={item.image} alt='anh' className='object-contain h-28' />
+              </div>
+              <div className='col-span-2'>
+                <p>{item.title}</p>
+              </div>
+              <div className='col-span-1'>
+                <p>{item.price * item.total}</p>
+              </div>
+              <div className='col-span-1 border-2 border-black flex items-center justify-between max-h-12 mr-8'>
+                <AiOutlineMinus size={defaultSize} />
+                <p>{item.total}</p>
+                <AiOutlinePlus size={defaultSize} />
+              </div>
+              <div className='mt-2'>
+                <AiOutlineDelete size={defaultSize} />
+              </div>
+            </div>
+          ))
+        }
+
       </div>
     </Layout>
   )

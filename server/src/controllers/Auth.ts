@@ -122,8 +122,9 @@ export class UserController {
     }
     async refreshToken(req: Request, res: Response): Promise<Response<ResponseRefreshToken>> {
         try {
-            const authHeader = req.header('Authorization');
+            const authHeader = req.header('RefreshToken');
             const refreshToken = authHeader?.split(' ')[1];
+            console.log(refreshToken)
             if (!refreshToken) return res.json({
                 code: 401,
                 success: false,

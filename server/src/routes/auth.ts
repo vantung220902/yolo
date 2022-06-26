@@ -9,11 +9,11 @@ router.post('/register', User.register);
 
 router.post('/login', User.login);
 
-router.get('/refreshToken', User.refreshToken);
+router.get('/refreshToken', checkAuth, User.refreshToken);
 
 router.get('/me', checkAuth, User.me);
 
-router.get('/logout', checkAuth,User.logout);
+router.get('/logout', checkAuth, User.logout);
 
 
 export default router;
