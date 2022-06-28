@@ -1,0 +1,2 @@
+export const SHOW_LOADING = 'ui/SHOW_LOADING'
+export const HIDDEN_LOADING = 'ui/HIDDEN_LOADING'

@@ -18,7 +18,7 @@ const create = (baseURL = appConfig.API_END_POINT) => {
         timeout: appConfig.CONNECTION_TIMEOUT,
     })
     api.axiosInstance.interceptors.request.use(config => {
-        const token = useToken.getToken() ? useToken.getToken() : localStorage.getItem(appConfig.ACCESS_TOKEN)
+        const token = useToken.getToken() ? useToken.getToken() : localStorage?.getItem(appConfig.ACCESS_TOKEN)
         config.headers.Authorization = 'Bearer ' + token;
         return Promise.resolve(config)
     })
@@ -48,8 +48,8 @@ const create = (baseURL = appConfig.API_END_POINT) => {
 
 
     //=========Product===========
-    const getProducts = (limit: number, cursor = null): Promise<ApiResponse<ResponseListProduct, ResponseListProduct>> => {
-        const url = cursor ? `product/gets?limit=${limit}&cursor=${cursor}` : `product/gets?limit=${limit}`;
+    const getProducts = (limit: number, cursor = null, q = ''): Promise<ApiResponse<ResponseListProduct, ResponseListProduct>> => {
+        const url = cursor ? `product/gets?limit=${limit}&cursor=${cursor}&q=${q}` : `product/gets?limit=${limit}&q=${q}`;
         return api.get(url, {}, newCancelToken())
     }
     const getProductIds = async () => {

@@ -1,6 +1,6 @@
 
 export interface ICartLocal {
-    productId: number;
+    productId: string;
     image: string;
     title: string;
     price: number;

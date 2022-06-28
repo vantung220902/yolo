@@ -15,13 +15,13 @@ const JWTManager = () => {
 
     const getUserId = () => userId
 
-    const getToken = () => inMemoryToken ? inMemoryToken : localStorage.getItem(ACCESS_TOKEN)?.toString()
+    const getToken = () => inMemoryToken ? inMemoryToken : localStorage?.getItem(ACCESS_TOKEN)
 
     const setToken = (accessToken: string, refreshToken: string) => {
         inMemoryToken = accessToken
-        localStorage.setItem(ACCESS_TOKEN, accessToken)
+        localStorage?.setItem(ACCESS_TOKEN, accessToken)
 
-        localStorage.setItem(REFRESH_TOKEN, refreshToken)
+        localStorage?.setItem(REFRESH_TOKEN, refreshToken)
         //Decode and set count down to refresh
         const decoded = jwtDecode<JwtPayload & { userId: number }>(accessToken)
         userId = decoded.userId;
@@ -36,9 +36,9 @@ const JWTManager = () => {
     }
     const deleteToken = () => {
         inMemoryToken = null
-        window.localStorage.setItem(LOGOUT_EVENT_NAME, Date.now().toString())
-        localStorage.removeItem(ACCESS_TOKEN)
-        localStorage.removeItem(REFRESH_TOKEN)
+        window.localStorage?.setItem(LOGOUT_EVENT_NAME, Date.now().toString())
+        localStorage?.removeItem(ACCESS_TOKEN)
+        localStorage?.removeItem(REFRESH_TOKEN)
         abortRefreshToken()
     }
     if (typeof window === "undefined") {

@@ -1,5 +1,5 @@
 import { createReducer } from 'typesafe-actions';
-import { getProductByIdAsync, loadMoreAsync } from './actions';
+import { getProductByIdAsync, loadMoreAsync, resetProduct } from './actions';
 import { IProduct } from './type';
 export interface IProductReducer {
     totalCount: number,
@@ -50,6 +50,11 @@ export default createReducer(init)
             product
         }
     })
+
+    .handleAction(resetProduct, (state: IProductReducer) => ({
+        ...init
+    }))
+
     .handleAction(getProductByIdAsync.failure, (state: IProductReducer, action: any) => ({
         ...state,
         error: action.payload.error

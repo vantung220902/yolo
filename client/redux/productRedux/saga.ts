@@ -1,3 +1,4 @@
+import { showLoading, hiddenLoading } from './../commonRedux/actions';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { Apis } from './../../services/api';
 import { getProductByIdAsync, loadMoreAsync } from './actions';
@@ -7,8 +8,10 @@ import { ResponseListProduct, ResponseProduct } from './type';
 function* loadMore(api: any, action: any) {
     const limit: number = action.payload.limit;
     const cursor = action.payload.cursor;
+    const q = action.payload.q;
+    yield put(showLoading())
     try {
-        const response: ResponseGenerator = yield call(api, limit, cursor)
+        const response: ResponseGenerator = yield call(api, limit, cursor, q)
         const data: ResponseListProduct = response.data;
         if (data.success) {
             yield put(loadMoreAsync.success(data))
@@ -20,10 +23,12 @@ function* loadMore(api: any, action: any) {
         console.log(error)
         yield put(loadMoreAsync.failure(error))
     }
+    yield put(hiddenLoading())
 }
 
 function* getProductById(api: any, action: any) {
     const { id } = action.payload;
+    yield put(showLoading())
     try {
         const response: ResponseGenerator = yield call(api, id)
         const data: ResponseProduct = response.data;
@@ -38,6 +43,7 @@ function* getProductById(api: any, action: any) {
         console.log(error)
         yield put(getProductByIdAsync.failure(error))
     }
+    yield put(hiddenLoading())
 }
 
 

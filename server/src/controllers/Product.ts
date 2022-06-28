@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { LessThan } from 'typeorm';
+import { LessThan, Like } from 'typeorm';
 import cloudinaryImageUploadMethod from '../utils/cloudinary';
 import { Product } from './../entities/Product';
 import { ProductInput, ResponseListProduct, ResponseProduct } from './../types/ProductType';
@@ -66,21 +66,10 @@ export class ProductController {
     }
     async listProducts(req: Request, res: Response): Promise<Response<ResponseListProduct, Record<any, ResponseListProduct>>> {
         try {
-            const { limit, cursor } = req.query;
+            const { limit, cursor, q } = req.query;
             const totalCount = await Product.count();
             const realLimit = Math.min(10, parseInt(limit as string, 10));
-            // const searches = [
-            //     {
-            //         title: Like(`%${search}%`),
-            //     },
-            //     {
-            //         color: Like(`%${search}%`),
-            //     },
-            //     {
-            //         description: Like(`%${search}%`),
-            //     },
 
-            // ]
             const findOptions: { [key: string]: any } = {
                 order: {
                     createdAt: 'DESC'
@@ -88,11 +77,22 @@ export class ProductController {
                 take: realLimit
             }
             let lastProduct: Product[] = [];
+            const isNumber = !isNaN(parseInt(q as string, 10));
             if (cursor) {
                 findOptions.where = [
-                    { createdAt: LessThan(cursor) },
+                    isNumber ? { categoryId: parseInt(q as string, 10), createdAt: LessThan(cursor), } : null,
+                    { title: Like(`%${q}%`), createdAt: LessThan(cursor), },
+                    { color: Like(`%${q}%`), createdAt: LessThan(cursor), },
+                    { description: Like(`%${q}%`), createdAt: LessThan(cursor), },
                 ]
                 lastProduct = await Product.find({ order: { createdAt: 'ASC' }, take: 1 });
+            } else {
+                findOptions.where = [
+                    isNumber ? { categoryId: parseInt(q as string, 10) } : null,
+                    { title: Like(`%${q}%`) },
+                    { color: Like(`%${q}%`) },
+                    { description: Like(`%${q}%`) },
+                ]
             }
             const listProducts = await Product.find(findOptions);
             const endList = listProducts[listProducts.length - 1];
@@ -101,7 +101,7 @@ export class ProductController {
                 success: true,
                 message: 'Get list Product successfully',
                 totalCount,
-                cursor: endList.createdAt,
+                cursor: endList?.createdAt,
                 hasMore: cursor ? endList.createdAt.toString() !== lastProduct[0].createdAt.toString()
                     : listProducts.length !== totalCount,
                 products: listProducts

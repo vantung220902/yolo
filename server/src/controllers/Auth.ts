@@ -124,7 +124,6 @@ export class UserController {
         try {
             const authHeader = req.header('RefreshToken');
             const refreshToken = authHeader?.split(' ')[1];
-            console.log(refreshToken)
             if (!refreshToken) return res.json({
                 code: 401,
                 success: false,

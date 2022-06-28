@@ -39,7 +39,7 @@ const Home: React.FC<Props> = ({ product, loadMore }) => {
     const height = screen.height;
     const handleLoadMore = () => {
       if (document.body.scrollTop > (height / 3) || document.documentElement.scrollTop > (height / 3) && product.hasMore) {
-        loadMore({ limit: 4, cursor: product.products.length > 1 ? product.cursor : undefined })
+        loadMore({ limit: 4, cursor: product.products.length > 1 ? product.cursor : undefined,q:'' })
       }
     }
     window.addEventListener('scroll', handleLoadMore)

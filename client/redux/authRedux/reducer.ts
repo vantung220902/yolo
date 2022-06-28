@@ -1,10 +1,8 @@
-import { loginAsync, registerAsync, logoutAsync } from './actions';
-import { IMe } from "./type"
-import useToken from '../../hooks/useToken';
 import { createReducer } from 'typesafe-actions';
-import appConfig from '../../config'
+import useToken from '../../hooks/useToken';
+import { loginAsync, logoutAsync, registerAsync } from './actions';
+import { IMe } from "./type";
 
-const { ACCESS_TOKEN, REFRESH_TOKEN } = appConfig;
 export interface IAuthReducer {
     user?: IMe,
     accessToken?: string,
@@ -24,10 +22,7 @@ export default createReducer(init)
         ...state
     }))
     .handleAction(loginAsync.success, (state: IAuthReducer, action: any) => {
-
-        localStorage.setItem('ACCESS_TOKEN', action.payload.accessToken)
-        localStorage.setItem('REFRESH_TOKEN', action.payload.refreshToken)
-        console.log('ZO', action.payload)
+        useToken.setToken(action.payload.accessToken as string, action.payload.refreshToken as string)
         return {
             ...state,
             user: <IMe>action.payload.user,
