@@ -1,5 +1,5 @@
 
-import { registerAsync, loginAsync, logoutAsync } from './actions';
+import { registerAsync, loginAsync, logoutAsync, getMeAsync } from './actions';
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { Apis } from '../../services/api';
 import { LoginInput, RegisterInput, ResponseAuth } from './type';
@@ -44,10 +44,24 @@ function* logout(api: any) {
         logoutAsync.failure(e)
     }
 }
+
+function* me(api: any) {
+    try {
+        const response: ResponseGenerator = yield call(api);
+        const data = <ResponseAuth>response.data;
+        if (data.success) yield put(getMeAsync.success(data))
+        else yield put(getMeAsync.failure(data.error))
+    } catch (e: any) {
+        console.log(e)
+        logoutAsync.failure(e)
+    }
+}
+
 export default function authSaga(apiInstance: Apis) {
     return [
         takeLatest(registerAsync.request, register, apiInstance.register),
         takeLatest(loginAsync.request, login, apiInstance.login),
         takeLatest(logoutAsync.request, logout, apiInstance.logout),
+        takeLatest(getMeAsync.request, me, apiInstance.me)
     ]
 }

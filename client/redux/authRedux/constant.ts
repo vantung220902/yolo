@@ -9,3 +9,7 @@ export const SIGN_UP_FAILURE = 'auth/SIGN_UP_FAILURE'
 export const LOGOUT = 'auth/LOGOUT'
 export const LOGOUT_SUCCESS = 'auth/LOGOUT_SUCCESS'
 export const LOGOUT_SUCCESS_FAILURE = 'auth/LOGOUT_SUCCESS_FAILURE'
+
+export const ME = 'auth/ME'
+export const ME_SUCCESS = 'auth/ME_SUCCESS'
+export const ME_SUCCESS_FAILURE = 'auth/ME_SUCCESS_FAILURE'

@@ -16,6 +16,7 @@ const JWTManager = () => {
     const getUserId = () => userId
 
     const getToken = () => inMemoryToken ? inMemoryToken : localStorage?.getItem(ACCESS_TOKEN)
+    
 
     const setToken = (accessToken: string, refreshToken: string) => {
         inMemoryToken = accessToken

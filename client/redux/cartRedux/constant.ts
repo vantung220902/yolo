@@ -1,0 +1,3 @@
+export const CREATE_ORDER = 'cart/CREATE_ORDER';
+export const CREATE_ORDER_SUCCESS = 'cart/CREATE_ORDER_SUCCESS';
+export const CREATE_ORDER_FAILURE = 'cart/CREATE_ORDER_FAILURE';

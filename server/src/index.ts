@@ -1,4 +1,5 @@
-import { Cart } from './entities/Cart';
+import { Order } from './entities/Order';
+import { ProductOrder } from './entities/ProductOrder';
 import { Category } from './entities/Category';
 import { Product } from './entities/Product';
 require('dotenv').config()
@@ -20,7 +21,7 @@ const main = async () => {
         password: process.env.DB_PASSWORD,
         logging: true,
         synchronize: true,
-        entities: [User,Product,Category,Cart]
+        entities: [User, Product, Category, Order, ProductOrder]
     })
     const app = express()
     

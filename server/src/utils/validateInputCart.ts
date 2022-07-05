@@ -1,5 +1,7 @@
-import { CartInputType } from "../types/CartType"
-export const validateCartInput = (cartInput: CartInputType) => {
+import { TODAY } from './../constant/index';
+import { OrderInputType } from "../types/OrderType"
+import { addDays } from './date';
+export const validateCartInput = (cartInput: OrderInputType) => {
     if (!cartInput.productId)
         return {
             message: 'Invalid product',
@@ -7,7 +9,7 @@ export const validateCartInput = (cartInput: CartInputType) => {
                 { field: 'product', message: 'Please Choose Product To Cart' }
             ]
         }
-    if (!cartInput.total || cartInput.total===0)
+    if (!cartInput.quantity || cartInput.quantity === 0)
         return {
             message: 'Invalid total',
             error: [
@@ -21,5 +23,13 @@ export const validateCartInput = (cartInput: CartInputType) => {
                 { field: 'secretUser', message: 'Please Enter Secret User' }
             ]
         }
+    if (!cartInput.deliveryData || new Date(cartInput.deliveryData) < addDays(TODAY, 3)) {
+        return {
+            message: 'Invalid delivery Data',
+            error: [
+                { field: 'deliveryData', message: 'The Delivery At The Least 3 Days' }
+            ]
+        }
+    }
     return null;
 }

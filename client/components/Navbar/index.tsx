@@ -11,26 +11,37 @@ import { IRootReducers } from '../../redux/rootReducer';
 import { useCheckAuth } from '../../hooks/useCheckAuth';
 import useToken from '../../hooks/useToken';
 import Dropdown from './DropDown';
+import { LOCAL_CART } from '../../services/cart';
+import { ICartLocal } from '../../redux/cartRedux/type';
+import { useDispatch } from 'react-redux';
+import { getMeAsync } from '../../redux/authRedux/actions';
 
 const Navbar = () => {
   const [active, setActive] = useState(0);
   const router = useRouter();
   const [data, setData] = useState<IMe | undefined>();
+  const [numberCart, setNumberCart] = useState(0);
   const auth = useSelector((state: IRootReducers) => state.auth);
-
   const navRef = useRef<HTMLDivElement>(null);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const checkData = async () => {
-      const check = await useToken.getRefreshToken();
+      const check = useToken.getToken();
       if (check) {
         const fetchData = await useCheckAuth(router);
         const accessToken = useToken.getToken();
-        if (accessToken && fetchData) setData(fetchData);
+        if (accessToken && fetchData) {
+          setData(fetchData);
+          dispatch(getMeAsync.success(fetchData));
+        }
       } else setData(undefined);
     };
     checkData();
-  }, [auth]);
+    const array = JSON.parse(
+      localStorage.getItem(LOCAL_CART) as string,
+    ) as ICartLocal[];
+    setNumberCart(array ? array.length : 0);
+  }, []);
 
   useEffect(() => {
     window.addEventListener('scroll', () => {
@@ -85,7 +96,7 @@ const Navbar = () => {
           <div className="relative">
             <AiOutlineShopping size={defaultSize} className="icon" />
             <div className="absolute top-[18%] left-[37%] cursor-pointer">
-              0
+              {numberCart}
             </div>
           </div>
         </Link>

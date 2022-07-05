@@ -1,14 +1,15 @@
-import { Cart } from './../entities/Cart';
-import { Product } from './../entities/Product';
-import { validateCartInput } from './../utils/validateInputCart';
-import { CartInputType, ResponseCart } from './../types/CartType';
+import { ProductOrder } from '../entities/ProductOrder';
+import { Order } from '../entities/Order';
+import { Product } from '../entities/Product';
+import { validateCartInput } from '../utils/validateInputCart';
+import { OrderInputType, ResponseOrder } from '../types/OrderType';
 import { Request, Response } from 'express';
 
 
-export class CartController {
-    async addCart(req: Request, res: Response): Promise<Response<ResponseCart, Record<any, ResponseCart>>> {
+export class OrderController {
+    async addCart(req: Request, res: Response): Promise<Response<ResponseOrder, Record<any, ResponseOrder>>> {
         try {
-            const input = <CartInputType>req.body;
+            const input = <OrderInputType>req.body;
             const userId = res.locals.userId;
             const validate = validateCartInput(input);
             if (validate !== null) {
@@ -19,6 +20,7 @@ export class CartController {
                 })
             }
             const productIds = input.productId.split(',');
+            const quantities = input.quantity.split(',');
             for (let i = 0; i < productIds.length - 1; i++) {
                 const existingProduct = await Product.findOne({
                     where: { id: parseInt(productIds[i], 10) }
@@ -34,18 +36,27 @@ export class CartController {
                         }
                     ]
                 });
-                const newCart = Cart.create({
+                const newOrder = Order.create({
                     userId,
-                    productId: parseInt(productIds[i], 10),
-                    total: input.total,
-                    secretUser: input.secretUser
                 });
-                await newCart.save();
+                await newOrder.save();
+
+                const newProductOrder = ProductOrder.create({
+                    orderId: newOrder.id,
+                    deliveryDate: input.deliveryData,
+                    note: input.note,
+                    productId: parseInt(productIds[i], 10),
+                    quantity: parseInt(quantities[i], 10),
+                    secretUser: input.secretUser,
+                });
+
+                await newProductOrder.save();
             }
             return res.json({
                 code: 200,
                 success: true,
                 message: 'Create Cart Successfully',
+
             })
         } catch (error) {
             return res.json({

@@ -21,8 +21,8 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
     const height = screen.height;
     const handleScroll = () => {
       if (
-        document.body.scrollTop > height / 3 + 50 ||
-        (document.documentElement.scrollTop > height / 3 + 50 && data.hasMore)
+        document.body.scrollTop > height / 4 ||
+        (document.documentElement.scrollTop > height / 4 && data.hasMore)
       ) {
         dispatch(
           loadMoreAsync.request({

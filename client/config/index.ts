@@ -12,6 +12,7 @@ const common = {
     ANIMATION_TIME: 300,
 };
 
+
 export default {
     ...configs,
     ...common

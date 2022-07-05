@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Logo from '../assets/Logo.png'
 const Footer = () => {
     return (
-        <div className='grid grid-cols-4 gap-4 py-8 mx-8 mt-8'>
+        <div className='grid grid-cols-4 gap-4 py-8 mx-8 mt-8 relative bottom-0 right-0 left-0'>
             <div className=''>
                 <p className='font-bold mb-4'>Support Switchboard</p>
                 <ul>

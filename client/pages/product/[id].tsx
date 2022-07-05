@@ -42,9 +42,8 @@ const ProductPage = ({ product }: { product: IProduct }) => {
     const listCart: ICartLocal[] = localStorage.getItem(LOCAL_CART)
       ? JSON.parse(localStorage.getItem(LOCAL_CART) as string)
       : [];
-    console.log(listCart);
     const index = listCart.findIndex(
-      (item) => item.productId === cart.productId,
+      (item) => item.productId == cart.productId,
     );
     let array = [];
     if (index !== -1) {
@@ -54,7 +53,7 @@ const ProductPage = ({ product }: { product: IProduct }) => {
           ...cart,
           total: cart.total + listCart[index].total,
         },
-        ...listCart.slice(index),
+        ...listCart.slice(index, -1),
       ];
     } else {
       array = [...listCart, cart];
