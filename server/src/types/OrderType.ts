@@ -6,9 +6,10 @@ import ResponseField from "./ResponseField";
 export interface OrderInputType {
     quantity: string;
     productId: string;
-    secretUser: string;
-    note: string,
-    deliveryData: string
+    secret: string;
+    note: string;
+    deliveryDate: string;
+    address: string;
 }
 export class ResponseOrder implements ResponseField {
     code: number;

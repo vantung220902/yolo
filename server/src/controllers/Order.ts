@@ -13,7 +13,7 @@ export class OrderController {
             const userId = res.locals.userId;
             const validate = validateCartInput(input);
             if (validate !== null) {
-                return res.json({
+                return res.status(401).json({
                     code: 401,
                     success: false,
                     ...validate
@@ -21,11 +21,11 @@ export class OrderController {
             }
             const productIds = input.productId.split(',');
             const quantities = input.quantity.split(',');
-            for (let i = 0; i < productIds.length - 1; i++) {
+            for (let i = 0; i < productIds.length; i++) {
                 const existingProduct = await Product.findOne({
                     where: { id: parseInt(productIds[i], 10) }
                 });
-                if (!existingProduct) return res.json({
+                if (!existingProduct) return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'Product is invalid',
@@ -43,23 +43,23 @@ export class OrderController {
 
                 const newProductOrder = ProductOrder.create({
                     orderId: newOrder.id,
-                    deliveryDate: input.deliveryData,
+                    deliveryDate: input.deliveryDate,
                     note: input.note,
                     productId: parseInt(productIds[i], 10),
                     quantity: parseInt(quantities[i], 10),
-                    secretUser: input.secretUser,
+                    secretUser: input.secret,
+                    address: input.address,
                 });
 
                 await newProductOrder.save();
             }
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Create Cart Successfully',
-
             })
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Server internal error ${error.message}`,

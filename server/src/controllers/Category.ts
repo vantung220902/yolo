@@ -10,7 +10,7 @@ export class CategoryController {
         try {
             const { title } = <CategoryInput>req.body;
             if (!title || title.length < 5) {
-                return res.json({
+                return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'Please your title for category',
@@ -25,7 +25,7 @@ export class CategoryController {
             }
             const existingCategory = await Category.find({ where: { title } });
             if (!existingCategory) {
-                return res.json({
+                return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'Title is already',
@@ -43,14 +43,14 @@ export class CategoryController {
                 title,
             });
             await newCategory.save();
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Title is already',
                 category: newCategory
             })
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Server internal error ${error.message}`,
@@ -60,14 +60,14 @@ export class CategoryController {
     async listCategories(_req: Request, res: Response): Promise<Response<ResponseCategory, Record<any, ResponseCategory>>> {
         try {
             const listCategories = await Category.find();
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Get list category successfully',
                 categories: listCategories
             })
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Server internal error ${error.message}`,

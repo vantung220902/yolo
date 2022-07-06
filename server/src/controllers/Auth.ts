@@ -14,7 +14,7 @@ export class UserController {
 
             const validate = validateRegisterInput({ username, email, password })
 
-            if (validate !== null) return res.json({
+            if (validate !== null) return res.status(401).json({
                 code: 401,
                 success: false,
                 ...validate
@@ -25,7 +25,7 @@ export class UserController {
                     { email }
                 ]
             });
-            if (existingUser) return res.json({
+            if (existingUser) return res.status(401).json({
                 code: 401,
                 success: false,
                 message: 'Duplicated username or email ',
@@ -44,7 +44,7 @@ export class UserController {
             })
             await User.save(newUser);
 
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Create User Successfully',
@@ -53,7 +53,7 @@ export class UserController {
                 refreshToken: createToken('refreshToken', newUser)
             })
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Error Server ${error.message} `,
@@ -68,7 +68,7 @@ export class UserController {
 
             const validate = validateLoginInput({ usernameOrEmail, password });
 
-            if (validate !== null) return res.json({
+            if (validate !== null) return res.status(401).json({
                 code: 401,
                 success: false,
                 ...validate
@@ -80,7 +80,7 @@ export class UserController {
                     { email: usernameOrEmail }
                 ]
             });
-            if (!existingUser) return res.json({
+            if (!existingUser) return res.status(401).json({
                 code: 401,
                 success: false,
                 message: 'Incorrect username or email ',
@@ -92,7 +92,7 @@ export class UserController {
                 ]
             })
             const isPasswordValid = await argon2.verify(existingUser.password, password);
-            if (!isPasswordValid) return res.json({
+            if (!isPasswordValid) return res.status(401).json({
                 code: 401,
                 success: false,
                 message: 'Incorrect Password ',
@@ -103,7 +103,7 @@ export class UserController {
                     }
                 ]
             })
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Login successfully',
@@ -113,7 +113,7 @@ export class UserController {
             })
 
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Error Server ${error.message} `,
@@ -124,7 +124,7 @@ export class UserController {
         try {
             const authHeader = req.header('RefreshToken');
             const refreshToken = authHeader?.split(' ')[1];
-            if (!refreshToken) return res.json({
+            if (!refreshToken) return res.status(401).json({
                 code: 401,
                 success: false,
                 message: 'Do not have refresh token in cookie'
@@ -137,7 +137,7 @@ export class UserController {
                 success: false,
                 message: 'Refresh Token incorrect'
             });
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Refresh Token Successfully',
@@ -146,7 +146,7 @@ export class UserController {
             })
 
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Error Internal Server ${error.message}`,
@@ -158,7 +158,7 @@ export class UserController {
             const { userId } = res.locals;
             if (userId) {
                 const existingUser = await User.findOne({ where: { id: userId } });
-                if (!existingUser) return res.json({
+                if (!existingUser) return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'User do not existing',
@@ -169,7 +169,7 @@ export class UserController {
                         }
                     ]
                 })
-                return res.json({
+                return res.status(200).json({
                     code: 200,
                     success: true,
                     message: 'Query me successfully',
@@ -178,7 +178,7 @@ export class UserController {
                     refreshToken: createToken('refreshToken', existingUser),
                 })
             }
-            return res.json({
+            return res.status(401).json({
                 code: 401,
                 success: false,
                 message: 'Do not find user',
@@ -197,7 +197,7 @@ export class UserController {
             const { userId } = res.locals;
             if (userId) {
                 const existingUser = await User.findOne({ where: { id: userId } });
-                if (!existingUser) return res.json({
+                if (!existingUser) return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'User do not existing',
@@ -210,13 +210,13 @@ export class UserController {
                 })
                 existingUser.tokenVersion += 1;
                 await existingUser.save()
-                return res.json({
+                return res.status(200).json({
                     code: 200,
                     success: true,
                     message: 'Logout successfully',
                 })
             }
-            return res.json({
+            return res.status(401).json({
                 code: 401,
                 success: false,
                 message: 'Do not find user',

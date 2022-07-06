@@ -12,14 +12,14 @@ export class ProductController {
             const { title, categoryId, color, description, price } = <ProductInput>req.body;
             const validate = validateProductInput({ title, categoryId, color, description, price });
             if (validate !== null) {
-                return res.json({
+                return res.status(401).json({
                     code: 401,
                     success: false,
                     ...validate
                 })
             }
             if (!req.files || req.files?.length < 1) {
-                return res.json({
+                return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'Please choose image',
@@ -50,14 +50,14 @@ export class ProductController {
                 image: image.join(''),
             });
             await newProduct.save();
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Create Product Successfully',
                 product: newProduct
             })
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Server internal error ${error.message}`,
@@ -67,9 +67,9 @@ export class ProductController {
     async listProducts(req: Request, res: Response): Promise<Response<ResponseListProduct, Record<any, ResponseListProduct>>> {
         try {
             const { limit, cursor, q } = req.query;
-            const totalCount = await Product.count();
-            const realLimit = Math.min(10, parseInt(limit as string, 10));
 
+            const realLimit = Math.min(10, parseInt(limit as string, 10));
+            let array = [];
             const findOptions: { [key: string]: any } = {
                 order: {
                     createdAt: 'DESC'
@@ -79,35 +79,44 @@ export class ProductController {
             let lastProduct: Product[] = [];
             const isNumber = !isNaN(parseInt(q as string, 10));
             if (cursor) {
-                findOptions.where = [
+                array = [
                     isNumber ? { categoryId: parseInt(q as string, 10), createdAt: LessThan(cursor), } : null,
                     { title: Like(`%${q}%`), createdAt: LessThan(cursor), },
                     { color: Like(`%${q}%`), createdAt: LessThan(cursor), },
                     { description: Like(`%${q}%`), createdAt: LessThan(cursor), },
                 ]
-                lastProduct = await Product.find({ order: { createdAt: 'ASC' }, take: 1 });
+                findOptions.where = array
+                lastProduct = await Product.find({
+                    where: findOptions.where,
+                    take: 1
+                });
             } else {
-                findOptions.where = [
+                array = [
                     isNumber ? { categoryId: parseInt(q as string, 10) } : null,
                     { title: Like(`%${q}%`) },
                     { color: Like(`%${q}%`) },
                     { description: Like(`%${q}%`) },
                 ]
+                findOptions.where = array
             }
             const listProducts = await Product.find(findOptions);
             const endList = listProducts[listProducts.length - 1];
-            return res.json({
+            const totalCount = await Product.count({
+                where: findOptions.where 
+            });
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Get list Product successfully',
                 totalCount,
                 cursor: endList?.createdAt,
-                hasMore: cursor ? endList.createdAt.toString() !== lastProduct[0].createdAt.toString()
+                hasMore: cursor && endList ? endList.createdAt.toString() !== lastProduct[0].createdAt.toString()
                     : listProducts.length !== totalCount,
                 products: listProducts
             })
         } catch (error) {
-            return res.json({
+            console.error('error', error)
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Server internal error ${error.message}`,
@@ -118,7 +127,7 @@ export class ProductController {
         try {
             const { id } = req.query;
             if (!id || isNaN(parseInt(id as string, 10))) {
-                return res.json({
+                return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'Please choose id',
@@ -137,7 +146,7 @@ export class ProductController {
                 }
             });
             if (!existingProduct) {
-                return res.json({
+                return res.status(401).json({
                     code: 401,
                     success: false,
                     message: 'Product not found',
@@ -150,14 +159,14 @@ export class ProductController {
 
                 })
             }
-            return res.json({
+            return res.status(200).json({
                 code: 200,
                 success: true,
                 message: 'Get product successfully',
                 product: existingProduct
             })
         } catch (error) {
-            return res.json({
+            return res.status(501).json({
                 code: 501,
                 success: false,
                 message: `Server internal error ${error.message}`,

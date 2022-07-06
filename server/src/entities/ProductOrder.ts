@@ -19,11 +19,11 @@ export class ProductOrder extends BaseEntity {
 
     @OneToMany(() => Product, product => product.id)
     @JoinTable()
-    products: Product[]
+    products: Product[];
 
     @OneToMany(() => Order, order => order.id)
     @JoinTable()
-    order: Order
+    order: Order;
 
     @Column()
     secretUser: string;
@@ -32,5 +32,8 @@ export class ProductOrder extends BaseEntity {
     deliveryDate: Date;
 
     @Column()
-    note: string
+    note: string;
+
+    @Column()
+    address: string;
 }
