@@ -1,43 +1,36 @@
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { AiOutlineDelete, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Layout from '../components/Layout';
 import ModalNoSelect from '../components/Modal/ModalNoSelect';
 import ModalOrder from '../components/Modal/ModalOrder';
-import { ICartLocal } from '../redux/cartRedux/type';
+import { deleteCart, getCarts, updateCart } from '../redux/cartRedux/action';
 import { showOrderProduct } from '../redux/commonRedux/actions';
 import { IRootReducers } from '../redux/rootReducer';
-import { LOCAL_CART } from '../services/cart';
 import { defaultSize } from '../services/ui';
-const Cart: React.FC<Props> = ({ onShowModel }) => {
-  const [carts, setCarts] = useState<ICartLocal[]>([]);
 
+const Cart = () => {
+  const carts = useSelector((state: IRootReducers) => state.cart.carts);
+  const user = useSelector((state: IRootReducers) => state.auth.user);
+  const router = useRouter();
+  const dispatch = useDispatch();
   useEffect(() => {
-    const data: ICartLocal[] = localStorage.getItem(LOCAL_CART)
-      ? JSON.parse(localStorage.getItem(LOCAL_CART) as string)
-      : [];
-    setCarts(data);
+    dispatch(getCarts());
   }, []);
   const handleNumber = (id: string, value: number) => {
-    const index = carts.findIndex((item) => item.productId == id);
-    const newObj = {
-      ...carts[index],
-      total: (carts[index]?.total as number) + value,
-    };
-    setCarts((pre) => {
-      pre[index] = newObj;
-      return [...pre];
-    });
-    localStorage.setItem(LOCAL_CART, JSON.stringify(carts));
+    dispatch(updateCart({ id, value }));
   };
 
   const handleDelete = (id: string) => {
-    const array = carts.filter((item) => item.productId != id);
-    setCarts(array);
-    localStorage.setItem(LOCAL_CART, JSON.stringify(array));
+    dispatch(deleteCart({ id }));
   };
   const handleOrder = () => {
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
     const array: string[] = [];
     var checkboxes = document.querySelectorAll<HTMLInputElement>(
       'input[type=checkbox]:checked',
@@ -45,14 +38,17 @@ const Cart: React.FC<Props> = ({ onShowModel }) => {
     checkboxes.forEach((item) => {
       array.push(item?.value);
     });
-    const total = array.reduce((pre, e) => {
-      return (carts.find((item) => item.productId == e)?.total as number) + pre;
-    }, 0);
-    onShowModel(
-      array.length > 0 ? (
-        <ModalOrder productId={array} total={total} />
-      ) : (
-        <ModalNoSelect />
+    const total: string[] = [];
+    carts.forEach((item) => {
+      if (array.find((c) => c == item.productId)) total.push(`${item.total}`);
+    });
+    dispatch(
+      showOrderProduct(
+        array.length > 0 ? (
+          <ModalOrder productId={array} total={total} />
+        ) : (
+          <ModalNoSelect />
+        ),
       ),
     );
   };
@@ -61,7 +57,9 @@ const Cart: React.FC<Props> = ({ onShowModel }) => {
     <Layout>
       <div className="grid grid-cols-8 space-x-4 my-12 xl:h-[60h] h-[50vh]">
         <div className="col-span-2 shadow-lg rounded-sm py-12 px-10 xl:h-[70%] h-[60%]">
-          <h5 className="text-normal">You are having 1 item in cart</h5>
+          <h5 className="text-normal">
+            You are having {carts?.length ? carts.length : 0} item in cart
+          </h5>
           <div className="flex items-center justify-between">
             <h5 className="">Total:</h5>
             <h4 className="text-primary font-bold">
@@ -89,7 +87,7 @@ const Cart: React.FC<Props> = ({ onShowModel }) => {
         <div className="col-span-6">
           {carts.map((item, index) => (
             <div
-              className=" grid grid-cols-5 items-center space-y-6"
+              className=" grid grid-cols-6 items-center space-y-6"
               key={index}
             >
               <div className="flex items-center justify-between">
@@ -108,7 +106,7 @@ const Cart: React.FC<Props> = ({ onShowModel }) => {
                   className="object-contain h-28 my-2 mx-auto"
                 />
               </div>
-              <div className="col-span-1 ">
+              <div className="col-span-2">
                 <h5>{item.title}</h5>
               </div>
               <div className="col-span-1">
@@ -143,12 +141,4 @@ const Cart: React.FC<Props> = ({ onShowModel }) => {
   );
 };
 
-type Props = ReturnType<typeof mapStateToProps> & typeof mapDispatchToProps;
-
-const mapStateToProps = (state: IRootReducers) => ({});
-
-const mapDispatchToProps = {
-  onShowModel: showOrderProduct,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Cart);
+export default Cart;

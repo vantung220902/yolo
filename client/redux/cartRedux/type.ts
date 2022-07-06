@@ -13,18 +13,19 @@ export interface ICartLocal {
 export interface IOrderRequest {
     userName: string,
     address: string,
-    deliveryDate: string,
+    deliveryDate: Date | string,
     productId: string[],
     note: string,
     secret: string,
 }
 
 export interface IInputCreateOrder {
-    total: number;
+    quantity: string;
     productId: string;
-    secretUser: string;
+    secret: string;
     note: string,
-    deliveryData: string
+    deliveryDate: string | Date;
+    address: string;
 }
 
 // type order

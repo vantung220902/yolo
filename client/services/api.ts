@@ -6,6 +6,7 @@ import useToken from '../hooks/useToken'
 import appConfig from '../config'
 import { newCancelToken } from '../utils'
 import { ResponseListCategory } from '../redux/categoryRedux/type';
+import { IInputCreateOrder } from '../redux/cartRedux/type';
 const create = (baseURL = appConfig.API_END_POINT) => {
     const api = apisauce.create({
         baseURL,
@@ -70,6 +71,12 @@ const create = (baseURL = appConfig.API_END_POINT) => {
         return api.get(`category/gets`, {}, newCancelToken())
     }
 
+    //========Cart===========
+
+    const addOrder = (order: IInputCreateOrder): Promise<ApiResponse<IResponse, IResponse>> => {
+        return api.post(`cart/add`, order, newCancelToken())
+    }
+
     return {
         //====Auth====
         login,
@@ -82,12 +89,11 @@ const create = (baseURL = appConfig.API_END_POINT) => {
         getProductIds,
         getProductById,
 
-
-
         //====Category====
         getCategories,
 
-
+        //====Cart====
+        addOrder,
     }
 }
 

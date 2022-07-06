@@ -3,26 +3,29 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useRef, useState } from 'react';
 import { AiOutlineSearch, AiOutlineShopping } from 'react-icons/ai';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Logo from '../../assets/Logo.png';
-import { defaultSize, titleNav } from '../../services/ui';
-import { IMe } from '../../redux/authRedux/type';
-import { IRootReducers } from '../../redux/rootReducer';
 import { useCheckAuth } from '../../hooks/useCheckAuth';
 import useToken from '../../hooks/useToken';
-import Dropdown from './DropDown';
-import { LOCAL_CART } from '../../services/cart';
-import { ICartLocal } from '../../redux/cartRedux/type';
-import { useDispatch } from 'react-redux';
 import { getMeAsync } from '../../redux/authRedux/actions';
+import { IMe } from '../../redux/authRedux/type';
+import { setActiveSearch } from '../../redux/commonRedux/actions';
+import { loadMoreAsync } from '../../redux/productRedux/actions';
+import { IRootReducers } from '../../redux/rootReducer';
+import { defaultSize, titleNav } from '../../services/ui';
+import Dropdown from './DropDown';
 
 const Navbar = () => {
   const [active, setActive] = useState(0);
   const router = useRouter();
   const [data, setData] = useState<IMe | undefined>();
-  const [numberCart, setNumberCart] = useState(0);
+  const [qSearch, setQSearch] = useState('');
   const auth = useSelector((state: IRootReducers) => state.auth);
   const navRef = useRef<HTMLDivElement>(null);
+  const carts = useSelector((state: IRootReducers) => state.cart.carts);
+  const isActiveSearch = useSelector(
+    (state: IRootReducers) => state.common.isActiveSearch,
+  );
   const dispatch = useDispatch();
   useEffect(() => {
     const checkData = async () => {
@@ -37,14 +40,10 @@ const Navbar = () => {
       } else setData(undefined);
     };
     checkData();
-    const array = JSON.parse(
-      localStorage.getItem(LOCAL_CART) as string,
-    ) as ICartLocal[];
-    setNumberCart(array ? array.length : 0);
   }, []);
 
   useEffect(() => {
-    window.addEventListener('scroll', () => {
+    const handleScroll = () => {
       if (
         document.body.scrollTop > 80 ||
         document.documentElement.scrollTop > 80
@@ -53,12 +52,26 @@ const Navbar = () => {
       } else {
         navRef.current?.classList.remove('navShow');
       }
-    });
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
+    setQSearch(event.currentTarget.value);
+    dispatch(
+      loadMoreAsync.request({
+        limit: 6,
+        cursor: undefined,
+        q: event.currentTarget.value,
+        isSearch: true,
+      }),
+    );
+  };
 
   return (
     <div
-      className="px-8 py-4 fixed top-0 left-0 right-0 grid grid-cols-3 bg-white transition-all duration-200 ease-in"
+      className="px-12 py-4 fixed top-0 left-0 grid grid-cols-3 bg-white transition-all duration-200 ease-in w-[100%]"
       ref={navRef}
     >
       <div className="flex items-center">
@@ -88,15 +101,33 @@ const Navbar = () => {
           objectFit="contain"
         />
       </div>
-      <div className="flex items-center justify-between w-[50%] ml-auto z-10">
-        <div className="mr-2">
-          <AiOutlineSearch size={defaultSize} className="icon" />
+      <div
+        className={`flex items-center justify-between w-[${
+          isActiveSearch ? '60%' : '50%'
+        }] ml-auto z-10`}
+      >
+        <div className="mr-2 flex items-center">
+          {isActiveSearch && (
+            <input
+              name="name"
+              placeholder="Search..."
+              value={qSearch}
+              onChange={handleChange}
+              className="py-2 border-t-0 border-r-0 border-l-0 border-b-2 
+            focus:border-blue-600  focus:outline-none focus:shadow-none"
+            />
+          )}
+          <AiOutlineSearch
+            size={defaultSize}
+            className="icon"
+            onClick={() => dispatch(setActiveSearch(!isActiveSearch))}
+          />
         </div>
         <Link href={'/cart'}>
           <div className="relative">
             <AiOutlineShopping size={defaultSize} className="icon" />
             <div className="absolute top-[18%] left-[37%] cursor-pointer">
-              {numberCart}
+              {carts?.length}
             </div>
           </div>
         </Link>

@@ -1,15 +1,15 @@
 import { showLoading, hiddenLoading } from './../commonRedux/actions';
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, delay, put, takeLatest } from 'redux-saga/effects';
 import { Apis } from './../../services/api';
 import { getProductByIdAsync, loadMoreAsync } from './actions';
 import { ResponseListProduct, ResponseProduct } from './type';
 
 
-function* loadMore(api: any, action: any) {
-    const limit: number = action.payload.limit;
-    const cursor = action.payload.cursor;
-    const q = action.payload.q;
-    yield put(showLoading())
+function* loadMore(api: any, action: ReturnType<typeof loadMoreAsync.request>) {
+
+    const { limit, cursor, q } = action.payload
+    yield put(showLoading());
+    yield delay(500);
     try {
         const response: ResponseGenerator = yield call(api, limit, cursor, q)
         const data: ResponseListProduct = response.data;

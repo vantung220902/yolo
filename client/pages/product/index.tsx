@@ -14,8 +14,11 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
   //redux
   const data = useSelector((state: IRootReducers) => state.product);
   const dispatch = useDispatch();
-  //state
+  //stateF
   const [qSearch, setQSearch] = useState('');
+  const isActiveSearch = useSelector(
+    (state: IRootReducers) => state.common.isActiveSearch,
+  );
 
   useEffect(() => {
     const height = screen.height;
@@ -29,6 +32,7 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
             limit: 6,
             cursor: data.products.length > 1 ? data.cursor : undefined,
             q: qSearch,
+            isSearch: false,
           }),
         );
       }
@@ -43,6 +47,7 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
           limit: 6,
           cursor: undefined,
           q: '',
+          isSearch: false,
         }),
       );
     }
@@ -54,6 +59,7 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
         limit: 6,
         cursor: undefined,
         q,
+        isSearch: false,
       }),
     );
     setQSearch(q);
@@ -69,122 +75,128 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
   };
   return (
     <Layout>
-      <div className="flex justify-between ">
-        <div className="w-[30%]">
-          <div className="my-2">
-            <h5 className="font-bold text-black">List Categories</h5>
-            <ul>
-              <li className="flex items-center mb-1">
-                <input
-                  className="form-check-input appearance-none 
+      <div className="flex justify-between">
+        {!isActiveSearch && (
+          <div className="w-[30%]">
+            <div className="my-2">
+              <h5 className="font-bold text-black">List Categories</h5>
+              <ul>
+                <li className="flex items-center mb-1">
+                  <input
+                    className="form-check-input appearance-none 
                 h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600
                 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top
                 bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                  type="radio"
-                  name="checkCategory"
-                  onClick={() => {
-                    searchProduct('');
-                  }}
-                />
-                <p className="text-[#C0C6C8] font-medium">All</p>
-              </li>
-              {categories?.categories.map((item, index) => {
-                return (
-                  <li className="flex items-center mb-1" key={item.id}>
-                    <input
-                      className="form-check-input appearance-none 
+                    type="radio"
+                    name="checkCategory"
+                    onClick={() => {
+                      searchProduct('');
+                    }}
+                  />
+                  <p className="text-[#C0C6C8] font-medium">All</p>
+                </li>
+                {categories?.categories.map((item) => {
+                  return (
+                    <li className="flex items-center mb-1" key={item.id}>
+                      <input
+                        className="form-check-input appearance-none 
                 h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600
                 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top
                 bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
-                      type="radio"
-                      name="checkCategory"
-                      onClick={() => {
-                        searchProduct(item.id);
-                      }}
-                    />
-                    <p className="text-[#C0C6C8] font-medium">{item.title}</p>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-          <div className="my-2">
-            <h5 className="font-bold text-black">Color</h5>
-            <ul>
-              <li className="flex items-center mb-1">
-                <input
-                  className="form-check-input appearance-none 
+                        type="radio"
+                        name="checkCategory"
+                        onClick={() => {
+                          searchProduct(item.id);
+                        }}
+                      />
+                      <p className="text-[#C0C6C8] font-medium">{item.title}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div className="my-2">
+              <h5 className="font-bold text-black">Color</h5>
+              <ul>
+                <li className="flex items-center mb-1">
+                  <input
+                    className="form-check-input appearance-none 
                 h-4 w-4 border border-gray-300 rounded-sm bg-white
                  checked:bg-blue-600 checked:border-blue-600 focus:outline-none
                  transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain
                  float-left mr-2 cursor-pointer"
-                  type="radio"
-                  name="checkColor"
-                  onClick={() => {
-                    searchProduct('');
-                  }}
-                />
-                <p className="text-[#C0C6C8] font-medium">All</p>
-              </li>
-              {listColor.map((item, index) => {
-                return (
-                  <li className="flex items-center mb-1" key={index}>
-                    <input
-                      className="form-check-input appearance-none h-4 w-4 border border-gray-300 
+                    type="radio"
+                    name="checkColor"
+                    onClick={() => {
+                      searchProduct('');
+                    }}
+                  />
+                  <p className="text-[#C0C6C8] font-medium">All</p>
+                </li>
+                {listColor.map((item, index) => {
+                  return (
+                    <li className="flex items-center mb-1" key={index}>
+                      <input
+                        className="form-check-input appearance-none h-4 w-4 border border-gray-300 
                   rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none
                   transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2
                   cursor-pointer"
-                      type="radio"
-                      name="checkColor"
-                      onClick={() => {
-                        searchProduct(item);
-                      }}
-                    />
-                    <p className="text-[#C0C6C8] font-medium">{item}</p>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-          <div className="my-2">
-            <h5 className="font-bold text-black">Size</h5>
-            <ul>
-              <li className="flex items-center mb-1">
-                <input
-                  className="form-check-input appearance-none 
+                        type="radio"
+                        name="checkColor"
+                        onClick={() => {
+                          searchProduct(item);
+                        }}
+                      />
+                      <p className="text-[#C0C6C8] font-medium">{item}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div className="my-2">
+              <h5 className="font-bold text-black">Size</h5>
+              <ul>
+                <li className="flex items-center mb-1">
+                  <input
+                    className="form-check-input appearance-none 
                 h-4 w-4 border border-gray-300 rounded-sm bg-white
                  checked:bg-blue-600 checked:border-blue-600 focus:outline-none
                  transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain
                  float-left mr-2 cursor-pointer"
-                  type="radio"
-                  name="checkSize"
-                />
-                <p className="text-[#C0C6C8] font-medium">All</p>
-              </li>
-              {listSize.map((item, index) => {
-                return (
-                  <li className="flex items-center mb-1" key={index}>
-                    <input
-                      className="form-check-input appearance-none h-4 w-4 border
+                    type="radio"
+                    name="checkSize"
+                  />
+                  <p className="text-[#C0C6C8] font-medium">All</p>
+                </li>
+                {listSize.map((item, index) => {
+                  return (
+                    <li className="flex items-center mb-1" key={index}>
+                      <input
+                        className="form-check-input appearance-none h-4 w-4 border
                    border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600
                    focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain
                     float-left mr-2 cursor-pointer"
-                      type="radio"
-                      name="checkSize"
-                    />
-                    <p className="text-[#C0C6C8] font-medium">
-                      {item.toUpperCase()}
-                    </p>
-                  </li>
-                );
-              })}
-            </ul>
+                        type="radio"
+                        name="checkSize"
+                      />
+                      <p className="text-[#C0C6C8] font-medium">
+                        {item.toUpperCase()}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <button className="btn mt-4" onClick={clearFilter}>
+              Delete Filter
+            </button>
           </div>
-          <button className="btn mt-4" onClick={clearFilter}>
-            Delete Filter
-          </button>
-        </div>
-        <div className="grid grid-cols-3 gap-12 w-[70%] mr-28">
+        )}
+        <div
+          className={`grid grid-cols-${isActiveSearch ? '4' : '3'} gap-6 w-[${
+            isActiveSearch ? '100%' : '70%'
+          }] mx-auto transition-all duration-200 ease-linear`}
+        >
           {data.products.map((item) => {
             return <Product product={item} key={item.id} />;
           })}
@@ -211,4 +223,5 @@ export const getStaticProps = async () => {
     },
   };
 };
+
 export default Category;

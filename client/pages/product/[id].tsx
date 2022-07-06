@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useDispatch } from 'react-redux';
+import { addCart } from '../../redux/cartRedux/action';
 import Layout from '../../components/Layout';
 import { ICartLocal } from '../../redux/cartRedux/type';
 import {
@@ -9,7 +10,6 @@ import {
   ResponseListProduct,
   ResponseProduct,
 } from '../../redux/productRedux/type';
-import { LOCAL_CART } from '../../services/cart';
 import { listColor2, listSize } from '../../services/localData';
 import { defaultSize } from '../../services/ui';
 
@@ -39,26 +39,7 @@ const ProductPage = ({ product }: { product: IProduct }) => {
       price: product.price,
       total: number,
     };
-    const listCart: ICartLocal[] = localStorage.getItem(LOCAL_CART)
-      ? JSON.parse(localStorage.getItem(LOCAL_CART) as string)
-      : [];
-    const index = listCart.findIndex(
-      (item) => item.productId == cart.productId,
-    );
-    let array = [];
-    if (index !== -1) {
-      array = [
-        ...listCart.slice(0, index),
-        {
-          ...cart,
-          total: cart.total + listCart[index].total,
-        },
-        ...listCart.slice(index, -1),
-      ];
-    } else {
-      array = [...listCart, cart];
-    }
-    localStorage.setItem(LOCAL_CART, JSON.stringify(array));
+    dispatch(addCart(cart));
   };
 
   return (

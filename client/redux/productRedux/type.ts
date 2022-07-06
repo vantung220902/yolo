@@ -30,5 +30,8 @@ export class ResponseListProduct implements IResponse {
 }
 
 export interface IPayloadProductAction {
-    limit: number, cursor: Date | undefined,q:string
+    limit: number
+    cursor: Date | undefined
+    q: string
+    isSearch?: boolean | undefined;
 }

@@ -11,6 +11,6 @@ export function newCancelToken(timeout = appConfig.CONNECTION_TIMEOUT) {
 export function addDays(date: string, days: number) {
     var result = new Date(date);
     result.setDate(result.getDate() + days);
-    return result;
+    return result.toISOString().slice(0, 10);
 }
 export const TODAY = new Date().toISOString().slice(0, 10) 

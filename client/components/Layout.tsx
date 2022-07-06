@@ -8,7 +8,7 @@ interface ILayoutProps {
 
 const Layout = ({ children }: ILayoutProps) => {
   return (
-    <div className="mx-8 my-16 h-screen w-screen ">
+    <div className="mx-auto my-16 h-screen xl:container ">
       <Navbar />
       <div className="mt-44 mx-12">
         {children}
