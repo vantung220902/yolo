@@ -202,9 +202,6 @@ const ModalOrder = ({
                 value={formik.values.note}
                 onChange={formik.handleChange}
               />
-              {formik.errors.note &&
-                formik.touched.note &&
-                renderError(formik.errors.note)}
             </div>
             <div className="flex items-center justify-start w-full">
               <button

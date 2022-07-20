@@ -1,4 +1,4 @@
-import { ResponseAuth } from './../redux/authRedux/type';
+import { InputUpdateUser, ResponseAuth } from './../redux/authRedux/type';
 import apisauce, { ApiResponse } from 'apisauce'
 import { LoginInput, RegisterInput } from '../redux/authRedux/type'
 import { ResponseListProduct, ResponseProduct } from '../redux/productRedux/type'
@@ -47,6 +47,10 @@ const create = (baseURL = appConfig.API_END_POINT) => {
         })
     }
 
+    const update = (values: InputUpdateUser): Promise<ApiResponse<ResponseAuth, ResponseAuth>> => {
+        return api.put('auth/update', values, newCancelToken())
+    }
+
 
     //=========Product===========
     const getProducts = (limit: number, cursor = null, q = ''): Promise<ApiResponse<ResponseListProduct, ResponseListProduct>> => {
@@ -84,6 +88,7 @@ const create = (baseURL = appConfig.API_END_POINT) => {
         register,
         logout,
         me,
+        update,
         //====Product====
         getProducts,
         getProductIds,

@@ -13,3 +13,7 @@ export const LOGOUT_SUCCESS_FAILURE = 'auth/LOGOUT_SUCCESS_FAILURE'
 export const ME = 'auth/ME'
 export const ME_SUCCESS = 'auth/ME_SUCCESS'
 export const ME_SUCCESS_FAILURE = 'auth/ME_SUCCESS_FAILURE'
+
+export const UPDATE_USER = 'auth/UPDATE_USER'
+export const UPDATE_USER_SUCCESS = 'auth/UPDATE_USER_SUCCESS'
+export const UPDATE_USER_FAILURE = 'auth/UPDATE_USER_FAILURE'

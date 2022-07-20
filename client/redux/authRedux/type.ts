@@ -14,6 +14,8 @@ export interface IMe {
     id: string;
     username: string;
     email: string;
+    address?: string;
+    phone?: string;
     password: string;
     avatar: string;
     tokenVersion: string;
@@ -27,4 +29,12 @@ export class ResponseAuth implements IResponse {
     error?: FieldError[]
     accessToken?: string;
     refreshToken?: string;
+}
+
+export interface InputUpdateUser {
+    name: string
+    email: string
+    address: string
+    phone: string;
+    image: File
 }
