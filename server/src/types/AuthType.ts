@@ -19,7 +19,7 @@ export class ResponseAuth implements ResponseField {
     user?: User;
     error?: FieldError[]
     accessToken?: string;
-    refreshToken?:string
+    refreshToken?: string
 }
 
 export class ResponseRefreshToken implements ResponseField {
@@ -29,3 +29,11 @@ export class ResponseRefreshToken implements ResponseField {
     accessToken?: string | undefined;
 
 }
+
+export interface InputUpdateUser {
+    name: string
+    email: string
+    address: string
+    phone: string
+}
+

@@ -15,5 +15,7 @@ router.get('/me', checkAuth, User.me);
 
 router.get('/logout', checkAuth, User.logout);
 
+router.put('/update', checkAuth, User.update)
+
 
 export default router;

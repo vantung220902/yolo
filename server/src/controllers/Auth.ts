@@ -1,7 +1,7 @@
 import { createToken } from '../utils/auth';
 import { validateLoginInput, validateRegisterInput } from './../utils/validateInputUser';
 import { User } from './../entities/User';
-import { RegisterInput, ResponseAuth, ResponseRefreshToken } from '../types/AuthType';
+import { InputUpdateUser, RegisterInput, ResponseAuth, ResponseRefreshToken } from '../types/AuthType';
 import { Request, Response } from "express"
 import argon2 from 'argon2'
 import { LoginInput } from '../types/AuthType';
@@ -223,6 +223,45 @@ export class UserController {
             })
 
         } catch (error) {
+            return res.status(501).json({
+                code: 501,
+                success: false,
+                message: `Error Internal Server ${error.message}`,
+            })
+        }
+    }
+    async update(req: Request, res: Response): Promise<Response<ResponseAuth>> {
+        try {
+            const { userId } = res.locals;
+            const { name, address, email, phone } = <InputUpdateUser>req.body;
+            const existingUser = await User.findOne({ where: { id: userId } })
+            if (!existingUser) return res.status(401).json({
+                code: 401,
+                success: false,
+                message: 'User do not existing',
+                error: [
+                    {
+                        field: 'user',
+                        message: `Do not find user`
+                    }
+                ]
+            })
+
+            existingUser.username = name;
+            existingUser.address = address;
+            existingUser.phone = phone;
+            existingUser.email = email;
+            await existingUser.save()
+
+            return res.status(200).json({
+                code: 200,
+                success: true,
+                message: 'Update User Successfully',
+                user: existingUser
+            })
+
+        } catch (error) {
+            console.error(error);
             return res.status(501).json({
                 code: 501,
                 success: false,
