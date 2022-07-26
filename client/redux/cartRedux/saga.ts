@@ -8,7 +8,6 @@ function* addOrder(api: any, action: ReturnType<typeof addOrderAsync.request>) {
     try {
         const response: ResponseGenerator = yield call(api, action.payload);
         const data: IResponse = response.data;
-        console.log(data)
         if (data.success) {
             yield put(addOrderAsync.success({ ...data, productIds: action.payload.productId }))
             yield put(hiddenModal())

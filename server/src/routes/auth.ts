@@ -1,21 +1,25 @@
-import { checkAuth } from './../middleware/checkAuth';
-import express from 'express'
-import { UserController } from '../controllers/Auth';
+import { checkAuth } from "./../middleware/checkAuth";
+import express from "express";
+import { UserController } from "../controllers/Auth";
+import storage from "./../middleware/uploadFile";
 const router = express.Router();
 
 const User = new UserController();
 
-router.post('/register', User.register);
+router.post("/register", User.register);
 
-router.post('/login', User.login);
+router.post("/login", User.login);
 
-router.get('/refreshToken', checkAuth, User.refreshToken);
+router.post("/forgot-password", User.forgotPassword);
 
-router.get('/me', checkAuth, User.me);
+router.put("/change-password", User.changePassword);
 
-router.get('/logout', checkAuth, User.logout);
+router.get("/refreshToken", checkAuth, User.refreshToken);
 
-router.put('/update', checkAuth, User.update)
+router.get("/me", checkAuth, User.me);
 
+router.get("/logout", checkAuth, User.logout);
+
+router.put("/update", checkAuth, storage.single("image"), User.update);
 
 export default router;

@@ -1,34 +1,41 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { Product } from "./Product";
 
 @Entity()
 export class User extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column({ unique: true })
-    username!: string;
+  @Column({ nullable: true })
+  fullName: string;
 
-    @Column({ unique: true })
-    email!: string;
+  @Column({ unique: true })
+  username!: string;
 
-    @OneToMany(() => Product, product => product.user)
-    product:Product[]    
+  @Column({ unique: true })
+  email!: string;
 
-    @Column()
-    password!: string;
+  @OneToMany(() => Product, (product) => product.user)
+  product: Product[];
 
-    @Column({ nullable: true })
-    avatar: string;
+  @Column()
+  password!: string;
 
-    @Column({ default: 0 })
-    tokenVersion: number;
+  @Column({ nullable: true })
+  avatar: string;
 
-    @Column({ nullable: true })
-    address: string
-    
-    @Column({ nullable: true })
-    phone: string
+  @Column({ default: 0 })
+  tokenVersion: number;
 
+  @Column({ nullable: true })
+  address: string;
 
+  @Column({ nullable: true })
+  phone: string;
 }

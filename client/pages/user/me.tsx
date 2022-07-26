@@ -9,16 +9,16 @@ import { useSelector } from 'react-redux';
 import { defaultSize } from 'services/ui';
 import * as yup from 'yup';
 import Photo from '../../assets/photo.png';
-import { useCheckAuth } from '../../hooks/useCheckAuth';
+import { useCheckAuth } from '../../hooks';
 import { IRootReducers } from '../../redux/rootReducer';
 import { useDropzone } from 'react-dropzone';
 import 'yup-phone';
+import { useDispatch } from 'react-redux';
+import { updateUserAsync } from 'redux/authRedux/actions';
 const me = () => {
   const user = useSelector((state: IRootReducers) => state.auth.user);
-  const [urlPreview, setUrlPreview] = useState<
-    (File & { preview: string }) | undefined
-  >();
-
+  const [urlPreview, setUrlPreview] = useState<{ image: File; preview: string } | undefined>();
+  const dispatch = useDispatch();
   const schema = yup.object({
     name: yup.string().min(4).required(),
     address: yup.string().min(4).required(),
@@ -39,8 +39,10 @@ const me = () => {
 
   const onDrop = useCallback((acceptedFiles: any) => {
     const file = acceptedFiles[0];
-    file.preview = URL.createObjectURL(file);
-    setUrlPreview(file);
+    setUrlPreview({
+      image: file,
+      preview: URL.createObjectURL(file),
+    });
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -63,17 +65,17 @@ const me = () => {
     validationSchema: schema,
     enableReinitialize: true,
   });
-  const handleSubmit = (
-    values: ReturnType<() => typeof formik.initialValues>,
-  ) => {
-    console.log(values);
+  const handleSubmit = (values: ReturnType<() => typeof formik.initialValues>) => {
+    dispatch(
+      updateUserAsync.request({
+        ...values,
+        image: urlPreview?.image,
+      }),
+    );
   };
 
   const renderError = (message: string) => (
-    <div
-      className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-      role="alert"
-    >
+    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
       <span className="block sm:inline">{message}</span>
     </div>
   );
@@ -92,12 +94,8 @@ const me = () => {
               <p className="mx-2">Profile</p>
             </div>
             <ul className="mt-2 cursor-pointer">
-              <li className=" px-4 py-2 bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ">
-                Setting
-              </li>
-              <li className=" px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ">
-                Order
-              </li>
+              <li className=" px-4 py-2 bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ">Setting</li>
+              <li className=" px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ">Order</li>
             </ul>
           </div>
         </div>
@@ -111,22 +109,11 @@ const me = () => {
                 <div className="my-12">
                   <h4 className="font-bold">Setting your profile</h4>
                   <div className="flex items-center my-4">
-                    <img
-                      src={urlPreview?.preview || user?.avatar}
-                      alt="Anh"
-                      className="w-44 h-44 p-1 rounded-full"
-                    />
+                    <img src={urlPreview?.preview || user?.avatar} alt="Anh" className="w-44 h-44 p-1 rounded-full" />
                     <div className="flex flex-col justify-center ml-6">
-                      <button
-                        {...getRootProps()}
-                        className="bg-[#7151F2] text-white font-bold py-2 px-4 rounded"
-                      >
+                      <button {...getRootProps()} className="bg-[#7151F2] text-white font-bold py-2 px-4 rounded">
                         <input {...getInputProps()} />
-                        {isDragActive ? (
-                          <p>Drop the files here ...</p>
-                        ) : (
-                          <p>Chang Avatar</p>
-                        )}
+                        {isDragActive ? <p>Drop the files here ...</p> : <p>Chang Avatar</p>}
                       </button>
                       <button
                         className={`bg-white border-2 border-gray-500 shadow-md 
@@ -145,16 +132,11 @@ const me = () => {
                     </div>
                   </div>
 
-                  <p className="text-gray-400">
-                    Choose the picture. Recommend the picture size 256 x 256px
-                  </p>
+                  <p className="text-gray-400">Choose the picture. Recommend the picture size 256 x 256px</p>
                 </div>
                 <form onSubmit={formik.handleSubmit}>
                   <div className="mb-6">
-                    <label
-                      htmlFor="name"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
+                    <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                       Your name
                     </label>
                     <input
@@ -166,15 +148,10 @@ const me = () => {
                       className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                       required
                     />
-                    {formik.errors.name &&
-                      formik.touched.name &&
-                      renderError(formik.errors.name)}
+                    {formik.errors.name && formik.touched.name && renderError(formik.errors.name)}
                   </div>
                   <div className="mb-6">
-                    <label
-                      htmlFor="address"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
+                    <label htmlFor="address" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                       Your address
                     </label>
                     <input
@@ -186,19 +163,14 @@ const me = () => {
                       className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                       required
                     />
-                    {formik.errors.address &&
-                      formik.touched.address &&
-                      renderError(formik.errors.address)}
+                    {formik.errors.address && formik.touched.address && renderError(formik.errors.address)}
                   </div>
                   <div className="mb-6">
-                    <label
-                      htmlFor="email"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
+                    <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                       Your email
                     </label>
                     <div className="flex items-center">
-                      <div className='w-full'>
+                      <div className="w-full">
                         <input
                           type="email"
                           id="email"
@@ -209,9 +181,7 @@ const me = () => {
                           placeholder="name@flowbite.com"
                           disabled
                         />
-                        {formik.errors.email &&
-                          formik.touched.email &&
-                          renderError(formik.errors.email)}
+                        {formik.errors.email && formik.touched.email && renderError(formik.errors.email)}
                       </div>
 
                       <button
@@ -223,10 +193,7 @@ const me = () => {
                     </div>
                   </div>
                   <div className="mb-6">
-                    <label
-                      htmlFor="phone"
-                      className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                    >
+                    <label htmlFor="phone" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                       Your phone
                     </label>
                     <input
@@ -238,9 +205,7 @@ const me = () => {
                       className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"
                       required
                     />
-                    {formik.errors.phone &&
-                      formik.touched.phone &&
-                      renderError(formik.errors.phone)}
+                    {formik.errors.phone && formik.touched.phone && renderError(formik.errors.phone)}
                   </div>
                   <button
                     type="submit"
@@ -255,19 +220,13 @@ const me = () => {
               <div className="w-[50%]">
                 <h5 className="font-bold mb-2">Just be confident</h5>
                 <p className="text-gray-400 text-justify text-md">
-                  It is a long established fact that a reader will be distracted
-                  by the readable content of a page when looking at its layout.
-                  The point of using Lorem Ipsum is that it has a more-or-less
-                  normal distribution of letters, as opposed to using 'Content
-                  here, content here', making it look like readable English.
+                  It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The
+                  point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content
+                  here', making it look like readable English.
                 </p>
               </div>
               <div className="w-[50%]">
-                <img
-                  src={Photo.src}
-                  alt="anh"
-                  className="w-48 h-48 object-contain"
-                />
+                <img src={Photo.src} alt="anh" className="w-48 h-48 object-contain" />
               </div>
             </div>
           </div>

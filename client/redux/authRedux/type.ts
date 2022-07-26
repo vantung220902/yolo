@@ -36,5 +36,5 @@ export interface InputUpdateUser {
     email: string
     address: string
     phone: string;
-    image: File
+    image?: File
 }

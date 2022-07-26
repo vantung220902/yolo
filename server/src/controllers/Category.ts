@@ -9,7 +9,7 @@ export class CategoryController {
     async addCategory(req: Request, res: Response): Promise<Response<ResponseCategory, Record<any, ResponseCategory>>> {
         try {
             const { title } = <CategoryInput>req.body;
-            if (!title || title.length < 5) {
+            if (!title || title.length < 4) {
                 return res.status(401).json({
                     code: 401,
                     success: false,

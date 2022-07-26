@@ -1,12 +1,9 @@
 import axios from 'axios';
-import { useEffect } from 'react';
-import {
-  AiFillCreditCard,
-  AiOutlineHeart,
-  AiOutlineShopping,
-  AiOutlineStar,
-} from 'react-icons/ai';
+import { debounce } from 'lodash';
+import { useEffect, useRef } from 'react';
+import { AiFillCreditCard, AiOutlineHeart, AiOutlineShopping, AiOutlineStar } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
+import { IProductReducer } from 'redux/productRedux/reducer';
 import { ResponseListProduct } from 'redux/productRedux/type';
 import banner from '../assets/banner.png';
 import Layout from '../components/Layout';
@@ -41,26 +38,24 @@ export const policiesData = [
 const Home = ({ products }: { products: ResponseListProduct }) => {
   const product = useSelector((state: IRootReducers) => state.product);
   const dispatch = useDispatch();
-  useEffect(() => {
+  const handleLoadMore = (arg: IProductReducer) => {
     const height = screen.height;
-    const handleLoadMore = () => {
-      if (
-        document.body.scrollTop > height / 3 ||
-        (document.documentElement.scrollTop > height / 3 && product.hasMore)
-      ) {
-        dispatch(
-          loadMoreAsync.request({
-            limit: 4,
-            cursor:
-              product.products.length > 1 ? product.cursor : products?.cursor,
-            q: '',
-            isSearch: false,
-          }),
-        );
-      }
-    };
-    window.addEventListener('scroll', handleLoadMore);
-    return () => window.removeEventListener('scroll', handleLoadMore);
+    if (arg.hasMore && (document.documentElement.scrollTop > height / 3 || document.body.scrollTop > height / 3)) {
+      dispatch(
+        loadMoreAsync.request({
+          limit: 4,
+          cursor: arg.cursor,
+          q: '',
+          isSearch: false,
+        }),
+      );
+    }
+  };
+
+  const debounceLoadMore = useRef(debounce((product) => handleLoadMore(product), 700)).current;
+  useEffect(() => {
+    window.addEventListener('scroll', debounceLoadMore.bind(null, product.products.length > 0 ? product : products));
+    return () => window.removeEventListener('scroll', debounceLoadMore);
   }, [product]);
   return (
     <Layout>
@@ -71,9 +66,7 @@ const Home = ({ products }: { products: ResponseListProduct }) => {
         })}
       </div>
       <main className="mt-24 flex flex-col items-stretch ">
-        <h3 className="text-center mb-12">
-          Rank Product Best Seller In This Week
-        </h3>
+        <h3 className="text-center mb-12">Rank Product Best Seller In This Week</h3>
         <div className="grid grid-cols-4 gap-4 mt-8">
           {products?.products?.map((item) => {
             return <Product product={item} key={item.id} />;
@@ -89,10 +82,7 @@ const Home = ({ products }: { products: ResponseListProduct }) => {
 };
 
 export const getStaticProps = async () => {
-  const response = await axios.get(
-    'http://localhost:4000/api/product/gets?limit=4&q=',
-  );
-  if (response.data) loadMoreAsync.success(response.data);
+  const response = await axios.get('http://localhost:4000/api/product/gets?limit=4&q=');
   return {
     props: {
       products: response.data,

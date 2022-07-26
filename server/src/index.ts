@@ -13,6 +13,7 @@ import 'reflect-metadata';
 import { createConnection } from "typeorm";
 import { User } from './entities/User';
 import route from './routes';
+import { mongoose } from '@typegoose/typegoose';
 const main = async () => {
     await createConnection({
         type: 'postgres',
@@ -31,6 +32,15 @@ const main = async () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(express.static(path.join(__dirname, 'public')));
+    const mongoUrl = `mongodb+srv://${process.env.SESSION_DB_USERNAME_DEV}:${process.env.SESSION_DB_PASSWORD_DEV}@reddit.nedcf.mongodb.net/${process.env.SESSION_DB_NAME_DEV}`;
+    await mongoose.connect(mongoUrl, {
+        w: 'majority',
+        retryWrites: true
+    })
+    console.log('MongoDB connected')
+
+    app.set('trust proxy', 1);
+
     route(app)
 
     const httpServer = createServer(app)

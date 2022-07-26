@@ -1,56 +1,43 @@
-import { showLoading, hiddenLoading } from './../commonRedux/actions';
-import { call, delay, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest } from 'redux-saga/effects';
+import { callApi } from '../commonRedux/callApi';
+import { toastifyErrorSaga } from '../commonRedux/toastifyFailureRedux';
 import { Apis } from './../../services/api';
+import { hiddenLoading, showLoading } from './../commonRedux/actions';
 import { getProductByIdAsync, loadMoreAsync } from './actions';
-import { ResponseListProduct, ResponseProduct } from './type';
-
 
 function* loadMore(api: any, action: ReturnType<typeof loadMoreAsync.request>) {
-
-    const { limit, cursor, q } = action.payload
-    yield put(showLoading());
-    yield delay(500);
-    try {
-        const response: ResponseGenerator = yield call(api, limit, cursor, q)
-        const data: ResponseListProduct = response.data;
-        if (data.success) {
-            yield put(loadMoreAsync.success(data))
-        } else {
-            yield put(loadMoreAsync.failure(data.error))
-        }
-
-    } catch (error: any) {
-        console.log(error)
-        yield put(loadMoreAsync.failure(error))
-    }
-    yield put(hiddenLoading())
+  yield put(showLoading());
+  yield call(
+    callApi as any,
+    api,
+    {
+      asyncAction: loadMoreAsync,
+      responseExtractor: (res: any) => res,
+      onFailure: toastifyErrorSaga,
+    },
+    action.payload,
+  );
+  yield put(hiddenLoading());
 }
 
 function* getProductById(api: any, action: any) {
-    const { id } = action.payload;
-    yield put(showLoading())
-    try {
-        const response: ResponseGenerator = yield call(api, id)
-        const data: ResponseProduct = response.data;
-        const { product } = data;
-        if (data.success && product) {
-            yield put(getProductByIdAsync.success(product))
-        } else {
-            yield put(getProductByIdAsync.failure(data.error))
-        }
-
-    } catch (error: any) {
-        console.log(error)
-        yield put(getProductByIdAsync.failure(error))
-    }
-    yield put(hiddenLoading())
+  yield put(showLoading());
+  yield call(
+    callApi as any,
+    api,
+    {
+      asyncAction: getProductByIdAsync,
+      responseExtractor: (res: any) => res,
+      onFailure: toastifyErrorSaga,
+    },
+    action.payload,
+  );
+  yield put(hiddenLoading());
 }
 
-
 export default function productSaga(apiInstance: Apis) {
-    return [
-        takeLatest(loadMoreAsync.request, loadMore, apiInstance.getProducts),
-
-        takeLatest(getProductByIdAsync.request, getProductById, apiInstance.getProductById)
-    ]
+  return [
+    takeLatest(loadMoreAsync.request, loadMore, apiInstance.getProducts),
+    takeLatest(getProductByIdAsync.request, getProductById, apiInstance.getProductById),
+  ];
 }

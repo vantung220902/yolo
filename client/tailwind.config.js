@@ -44,11 +44,20 @@ module.exports = {
           "100%": {
             transform: "rotate(360deg)"
           }
+        },
+        spin: {
+          "from": {
+            transform: " rotate(0deg)"
+          },
+          "to": {
+            transform: "rotate(360deg)"
+          }
         }
       },
       animation: {
         pulse: "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         rotate: "rotate 5s infinite linear",
+        spin: 'spin 1s linear infinite'
       },
 
     },

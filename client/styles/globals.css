@@ -4,56 +4,58 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@100;200;300;400;500;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
 
-
 @layer base {
   body {
     @apply scrollbar-hide;
   }
-  h1{
+  h1 {
     @apply text-5xl font-bold;
   }
-  h2{
+  h2 {
     @apply text-4xl font-body;
   }
-  h3{
+  h3 {
     @apply text-3xl;
   }
-  h4{
-  @apply text-2xl;
+  h4 {
+    @apply text-2xl;
   }
-   h5{
-  @apply text-xl;
+  h5 {
+    @apply text-xl;
   }
-  
 }
 
-@layer components{
-    .sidebarIcon{
-        @apply h-6 text-[#808080] cursor-pointer;
-    }
-    .tag{
-        @apply py-1.5 px-3 text-[#cecece] bg-[#282828] rounded-xl text-xs font-bold border-2 border-[#484848];
-    }
-    .genre {
+@layer components {
+  .sidebarIcon {
+    @apply h-6 text-[#808080] cursor-pointer;
+  }
+  .tag {
+    @apply py-1.5 px-3 text-[#cecece] bg-[#282828] rounded-xl text-xs font-bold border-2 border-[#484848];
+  }
+  .genre {
     @apply bg-[#101010] text-[#CECECE] border border-[#484848] rounded-xl py-2.5 px-3.5 text-[11px] font-bold cursor-default;
   }
-   .btn{
-    @apply border-2 border-primary px-4 py-2 rounded uppercase text-lg font-semibold cursor-pointer hover:bg-primary hover:text-[#ffffff];
+  .btn {
+    @apply border-2 border-primary px-4 py-2 rounded uppercase text-lg font-semibold cursor-pointer;
   }
-   .btnProduct{
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-70;
+  }
+
+  .btnProduct {
     @apply border-2 bg-primary px-4 py-1 rounded uppercase text-lg font-semibold text-white cursor-pointer;
   }
-   .icon {
+  .icon {
     @apply hover:scale-125 transition-all duration-150 ease-out cursor-pointer;
   }
-   .croppedIcon {
+  .croppedIcon {
     @apply clip-path: inset(0 50% 0 0);
   }
 
   .playerIcon {
     @apply transition ease-out transform hover:scale-105 hover:text-white;
   }
-  .navShow{
-  @apply shadow-lg z-10;
+  .navShow {
+    @apply shadow-lg z-10;
   }
 }
