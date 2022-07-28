@@ -54,12 +54,26 @@ const ForgotPassword = () => {
           {({ isSubmitting, isValid }) => (
             <Form className="px-8 pt-6 pb-8 mb-4">
               <InputField name="email" placeholder="Email" label="Email" type="text" />
-              <Button loading={auth.loading} disabled={auth.loading || !isValid} className="btn w-[100%] mb-2" type="submit">
-                {isSubmitting ? <AiOutlineLoading size={defaultSize} className="mx-auto text-md  animate-rotate" /> : 'Submit'}
+              <Button
+                loading={auth.loading}
+                disabled={auth.loading || !isValid}
+                className="btn w-[100%] mb-2"
+                type="submit"
+              >
+                {isSubmitting ? (
+                  <AiOutlineLoading
+                    size={defaultSize}
+                    className="mx-auto text-md  animate-rotate"
+                  />
+                ) : (
+                  'Submit'
+                )}
               </Button>
               <div className="flex items-center justify-between">
                 <Link href="/auth/register">
-                  <p className="cursor-pointer inline-block align-baseline font-bold text-md text-blue-500 hover:text-blue-800">Register</p>
+                  <p className="cursor-pointer inline-block align-baseline font-bold text-md text-blue-500 hover:text-blue-800">
+                    Register
+                  </p>
                 </Link>
                 <Link href="/auth/forgot_password">
                   <p

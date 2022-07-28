@@ -19,7 +19,11 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
   const [qSearch, setQSearch] = useState('');
   const isActiveSearch = useSelector((state: IRootReducers) => state.common.isActiveSearch);
   const handleScroll = (arg: IProductReducer | undefined) => {
-    if (arg?.hasMore && (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400)) {
+    const { height } = screen;
+    if (
+      arg?.hasMore &&
+      (document.body.scrollTop > height / 4 || document.documentElement.scrollTop > height / 4)
+    ) {
       dispatch(
         loadMoreAsync.request({
           limit: 8,
@@ -30,7 +34,9 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
       );
     }
   };
-  const debounceLoadMore = useRef(debounce((cursor: IProductReducer) => handleScroll(cursor), 700)).current;
+  const debounceLoadMore = useRef(
+    debounce((product: IProductReducer) => handleScroll(product), 700),
+  ).current;
   useEffect(() => {
     window.addEventListener('scroll', debounceLoadMore.bind(null, data));
     return () => window.removeEventListener('scroll', handleScroll.bind(null, undefined));
@@ -184,7 +190,9 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
             </button>
           </div>
         )}
-        <div className={`grid grid-cols-4 gap-6 w-[100%] mx-auto transition-all duration-200 ease-linear`}>
+        <div
+          className={`grid grid-cols-4 gap-6 w-[100%] mx-auto transition-all duration-200 ease-linear`}
+        >
           {data.products.map((item) => {
             return <Product product={item} key={item.id} />;
           })}

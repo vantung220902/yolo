@@ -1,4 +1,4 @@
-import { sendEmail } from "./../utils/sendEmail";
+import { htmlEmail, sendEmail } from "./../utils/sendEmail";
 import { TokenModel } from "./../models/Token";
 import argon2 from "argon2";
 import { Request, Response } from "express";
@@ -70,7 +70,6 @@ export class UserController {
   async login(req: Request, res: Response) {
     try {
       const { usernameOrEmail, password } = <LoginInput>req.body;
-      console.log("req.body", req.body);
       const validate = validateLoginInput({ usernameOrEmail, password });
 
       if (validate !== null)
@@ -315,10 +314,12 @@ export class UserController {
         userId: `${existingUser.id}`,
         token: hashResetToken,
       }).save();
-      await sendEmail(
-        email,
-        `<a href='http://localhost:3000/auth/change-password?token=${resetToken}&userId=${existingUser.id}'>Click Here 👻</a>`
-      );
+      await sendEmail({
+        to: email,
+        subject: "Reset Password",
+        html: htmlEmail(resetToken, existingUser.id),
+        text: "Click Here 👻",
+      });
       return res.status(200).json({
         code: 200,
         success: true,

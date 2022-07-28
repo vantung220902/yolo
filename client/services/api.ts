@@ -4,7 +4,11 @@ import useToken from '../hooks/useToken';
 import { LoginInput, RegisterInput } from '../redux/authRedux/type';
 import { IInputCreateOrder } from '../redux/cartRedux/type';
 import { ResponseListCategory } from '../redux/categoryRedux/type';
-import { IPayloadProductAction, ResponseListProduct, ResponseProduct } from '../redux/productRedux/type';
+import {
+  IPayloadProductAction,
+  ResponseListProduct,
+  ResponseProduct,
+} from '../redux/productRedux/type';
 import { newCancelToken } from '../utils';
 import { ChangeInput } from './../pages/auth/change-password';
 import { InputUpdateUser, ResponseAuth } from './../redux/authRedux/type';
@@ -20,7 +24,9 @@ const create = (baseURL = appConfig.API_END_POINT) => {
     timeout: appConfig.CONNECTION_TIMEOUT,
   });
   api.axiosInstance.interceptors.request.use((config) => {
-    const token = useToken.getToken() ? useToken.getToken() : localStorage?.getItem(appConfig.ACCESS_TOKEN);
+    const token = useToken.getToken()
+      ? useToken.getToken()
+      : localStorage?.getItem(appConfig.ACCESS_TOKEN);
     config.headers.Authorization = 'Bearer ' + token;
     return Promise.resolve(config);
   });
@@ -52,22 +58,36 @@ const create = (baseURL = appConfig.API_END_POINT) => {
     );
   };
 
-  const updateProfile = (values: InputUpdateUser): Promise<ApiResponse<ResponseAuth, ResponseAuth>> => {
-    return api.put('auth/update', values, newCancelToken());
+  const updateProfile = (
+    values: InputUpdateUser,
+  ): Promise<ApiResponse<ResponseAuth, ResponseAuth>> => {
+    const data = new FormData();
+    data.append('name', values.name);
+    data.append('address', values.address);
+    data.append('phone', values.phone);
+    data.append('email', values.email);
+    if (values?.image) data.append('image', values.image);
+    return api.put('auth/update', data, newCancelToken());
   };
 
   const forgotPassword = (values: string): Promise<ApiResponse<IResponse, IResponse>> => {
     return api.post('auth/forgot-password', values, newCancelToken());
   };
 
-  const changePassword = (values: ChangeInput & { token: string; userId: string }): Promise<ApiResponse<IResponse, IResponse>> => {
+  const changePassword = (
+    values: ChangeInput & { token: string; userId: string },
+  ): Promise<ApiResponse<IResponse, IResponse>> => {
     return api.put('auth/change-password', values, newCancelToken());
   };
 
   //=========Product===========
-  const getProducts = (payload: IPayloadProductAction): Promise<ApiResponse<ResponseListProduct, ResponseListProduct>> => {
+  const getProducts = (
+    payload: IPayloadProductAction,
+  ): Promise<ApiResponse<ResponseListProduct, ResponseListProduct>> => {
     const { limit, cursor = null, q = '' } = payload;
-    const url = cursor ? `product/gets?limit=${limit}&cursor=${cursor}&q=${q}` : `product/gets?limit=${limit}&q=${q}`;
+    const url = cursor
+      ? `product/gets?limit=${limit}&cursor=${cursor}&q=${q}`
+      : `product/gets?limit=${limit}&q=${q}`;
     return api.get(url, {}, newCancelToken());
   };
   const getProductIds = async () => {
@@ -94,6 +114,10 @@ const create = (baseURL = appConfig.API_END_POINT) => {
     return api.post(`cart/add`, order, newCancelToken());
   };
 
+  const getOrder = (): Promise<ApiResponse<IResponse, IResponse>> => {
+    return api.get('cart/', {}, newCancelToken());
+  };
+
   return {
     //====Auth====
     login,
@@ -114,6 +138,7 @@ const create = (baseURL = appConfig.API_END_POINT) => {
 
     //====Cart====
     addOrder,
+    getOrder,
   };
 };
 

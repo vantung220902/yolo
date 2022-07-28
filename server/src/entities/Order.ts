@@ -1,26 +1,37 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ProductOrder } from './ProductOrder';
-import { User } from './User';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { ProductOrder } from "./ProductOrder";
+import { User } from "./User";
 
 @Entity()
 export class Order extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id!: number;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-    @Column()
-    userId: number;
+  @Column()
+  userId: number;
 
-    @OneToOne(() => User, user => user.id)
-    @JoinTable()
-    user: User
+  @OneToOne(() => User, (user) => user.id)
+  @JoinTable()
+  user: User;
 
-    @OneToMany(() => ProductOrder, productOrder => productOrder.id)
-    @JoinTable()
-    productOrder: ProductOrder[]
-    
-    @CreateDateColumn({ type: 'timestamptz' })
-    createdAt: Date;
+  @OneToMany(() => ProductOrder, (productOrder) => productOrder.order)
+  @JoinColumn({ name: "id", referencedColumnName: "orderId" })
+  productOrder: ProductOrder;
 
-    @UpdateDateColumn({ type: 'timestamptz' })
-    updatedAt: Date;
+  @CreateDateColumn({ type: "timestamptz" })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: "timestamptz" })
+  updatedAt: Date;
 }

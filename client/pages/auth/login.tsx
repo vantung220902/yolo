@@ -16,13 +16,21 @@ import { IRootReducers } from '../../redux/rootReducer';
 import { defaultSize } from '../../services/ui';
 import { mapFieldErrors } from '../../utils/mapFieldError';
 import * as yup from 'yup';
+import RenderError from 'components/RenderError';
 const Login = () => {
   const router = useRouter();
   const auth = useSelector((state: IRootReducers) => state.auth);
   const dispatch = useDispatch();
   const schema = yup.object({
-    usernameOrEmail: yup.string().required('Please enter user name'),
-    password: yup.string().min(5, 'Password must be least 5 characters').required('Please enter password'),
+    usernameOrEmail: yup
+      .string()
+      .trim('Username Or Email must be not includes space')
+      .strict(true)
+      .required('Please enter user name'),
+    password: yup
+      .string()
+      .min(5, 'Password must be least 5 characters')
+      .required('Please enter password'),
   });
   useEffect(() => {
     const checkData = async () => {
@@ -44,17 +52,6 @@ const Login = () => {
     }
   }, [auth]);
 
-  const renderError = () => {
-    let body = null;
-    for (let i in error) {
-      body = (
-        <div className="my-4">
-          <h4 className="text-red-600">{error[i]}</h4>
-        </div>
-      );
-    }
-    return body;
-  };
   if (auth.user) router.push('/');
   return (
     <div className="w-full h-full fixed">
@@ -64,11 +61,28 @@ const Login = () => {
         <Formik initialValues={initialValues} onSubmit={onLogin} validationSchema={schema}>
           {({ isSubmitting, isValid }) => (
             <Form className="px-8 pt-6 pb-8 mb-4">
-              <InputField name="usernameOrEmail" placeholder="Username Or Email" label="Username Or Email" type="text" />
+              <InputField
+                name="usernameOrEmail"
+                placeholder="Username Or Email"
+                label="Username Or Email"
+                type="text"
+              />
               <InputField name="password" placeholder="Password" label="Password" type="password" />
-              {Object.keys(error).length > 0 && renderError()}
-              <Button loading={auth.loading} disabled={auth.loading || !isValid} className="btn w-[100%] mb-2" type="submit">
-                {isSubmitting ? <AiOutlineLoading size={defaultSize} className="mx-auto text-md  animate-rotate" /> : 'Sign In'}
+              {Object.keys(error).length > 0 && <RenderError error={error} isValid={isValid} />}
+              <Button
+                loading={auth.loading}
+                disabled={auth.loading || !isValid}
+                className="btn w-[100%] mb-2"
+                type="submit"
+              >
+                {isSubmitting ? (
+                  <AiOutlineLoading
+                    size={defaultSize}
+                    className="mx-auto text-md  animate-rotate"
+                  />
+                ) : (
+                  'Sign In'
+                )}
               </Button>
               <div className="flex items-center justify-between">
                 <Link href="/auth/register">

@@ -1,13 +1,11 @@
-
 export interface ICategory {
-    id: string;
-    title: string;
+  id: string;
+  title: string;
 }
 
-
 export class ResponseListCategory implements IResponse {
-    code!: number;
-    success!: boolean;
-    message?: string | undefined;
-    categories!: ICategory[]
+  code!: number;
+  success!: boolean;
+  message?: string | undefined;
+  categories!: ICategory[];
 }

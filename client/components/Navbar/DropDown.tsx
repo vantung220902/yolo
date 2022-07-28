@@ -46,30 +46,33 @@ export default function Dropdown({ user }: IPropDrop) {
           <div className="px-1 py-1 cursor-pointer " onClick={() => logoutDispatch()}>
             <Menu.Item>
               {({ active }: any) => (
-                <button
+                <Button
+                  loading={loading}
+                  disabled={loading}
                   className={`${
                     active && 'bg-white/10 '
                   } group  flex rounded-md items-center w-full px-2 py-2 text-sm font-semibold tracking-wide text-white`}
                 >
                   <LogoutIcon className="w-5 h-5 mr-2 " aria-hidden="true" />
                   Log out
-                </button>
+                </Button>
               )}
             </Menu.Item>
           </div>
           <Menu.Item>
             {({ active }: any) => (
-              <Button
-                className={`${
-                  active && 'bg-white/10 '
-                } group  flex rounded-md items-center w-full px-2 py-2 text-sm font-semibold tracking-wide text-white`}
-                onClick={() => router.push('/user/me')}
-                loading={loading}
-                disabled={loading}
-              >
-                <AiOutlineSetting className="w-5 h-5 mr-2 " aria-hidden="true" />
-                Profile
-              </Button>
+              <div className="px-1 py-1 cursor-pointer " onClick={() => router.push('/user/me')}>
+                <Button
+                  className={`${
+                    active && 'bg-white/10 '
+                  } group  flex rounded-md items-center w-full px-2 py-2 text-sm font-semibold tracking-wide text-white`}
+                  loading={loading}
+                  disabled={loading}
+                >
+                  <AiOutlineSetting className="w-5 h-5 mr-2 " aria-hidden="true" />
+                  Profile
+                </Button>
+              </div>
             )}
           </Menu.Item>
         </Menu.Items>

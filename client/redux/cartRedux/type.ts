@@ -1,6 +1,4 @@
-import { IProduct } from './../productRedux/type';
-import { IMe } from './../authRedux/type';
-
+import { Product } from './../../../server/src/entities/Product';
 export interface ICartLocal {
     productId: string;
     image: string;
@@ -29,12 +27,28 @@ export interface IInputCreateOrder {
 }
 
 // type order
-export interface IOrder {
-    id: number,
-    user?: IMe,
-    products: IProduct[],
-    total: number,
-    deliveryDate: string,
-    note: string,
-    secret: string,
-}
+export interface IProductOrder {
+    id: number;
+    orderId: number;
+    productId: number;
+    quantity: number;
+    secretUser: string;
+    deliveryDate: Date;
+    note: string;
+    address: string;
+    products: Product;
+  }
+  export interface IOrder {
+    id: number;
+    userId: number;
+    createdAt: Date;
+    updatedAt: Date;
+    productOrder: IProductOrder[];
+  }
+  export class ResponseListProductOrder implements IResponse {
+    code!: number;
+    success!: boolean;
+    message?: string | undefined;
+    error?: FieldError[] | undefined;
+    data: IOrder | undefined;
+  }

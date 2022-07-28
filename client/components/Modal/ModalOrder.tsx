@@ -72,7 +72,7 @@ const ModalOrder = ({
 
   return (
     <div
-      className="py-6 transition duration-150 ease-in-out z-10 w-full h-full md:h-auto shadow dark:bg-gray-700"
+      className="py-6 transition duration-150 ease-in-out z-10 w-full h-full md:h-auto shadow"
       id="modal"
     >
       <div role="alert" className="container mx-auto w-11/12 md:w-2/3 max-w-lg">

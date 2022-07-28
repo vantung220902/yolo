@@ -15,6 +15,7 @@ import { IRootReducers } from '../../redux/rootReducer';
 import { defaultSize } from '../../services/ui';
 import { mapFieldErrors } from '../../utils/mapFieldError';
 import * as yup from 'yup';
+import RenderError from 'components/RenderError';
 export interface ChangeInput {
   password: string;
   confirmPassword: string;
@@ -52,17 +53,6 @@ const ChangePassword = () => {
       .oneOf([yup.ref('password'), null], 'Password must match')
       .required('Please enter confirm password'),
   });
-  const renderError = () => {
-    let body = null;
-    for (let i in error) {
-      body = (
-        <div className="my-4">
-          <h4 className="text-red-600">{error[i]}</h4>
-        </div>
-      );
-    }
-    return body;
-  };
   if (auth.user) router.push('/');
   return (
     <div className="w-full h-full fixed">
@@ -70,11 +60,11 @@ const ChangePassword = () => {
       <div className="w-[600px] 2xl:h-[70%] mx-auto my-12 absolute z-10 inset-0 bg-[#ffffff] shadow-lg rounded-lg px-4 py-8">
         <h2 className="text-center">Change password </h2>
         <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={schema}>
-          {({ isSubmitting }) => (
+          {({ isSubmitting, isValid }) => (
             <Form className="px-8 pt-6 pb-8 mb-4">
               <InputField name="password" placeholder="New Password" label="New Password" type="password" />
               <InputField name="confirmPassword" placeholder="Confirm Password" label="Confirm Password" type="password" />
-              {Object.keys(error).length > 0 && renderError()}
+              {Object.keys(error).length > 0 && <RenderError error={error} isValid={isValid} />}
               <button className="btn w-[100%] mb-2" type="submit">
                 {isSubmitting ? <AiOutlineLoading size={defaultSize} className="mx-auto text-md  animate-rotate" /> : 'Submit'}
               </button>

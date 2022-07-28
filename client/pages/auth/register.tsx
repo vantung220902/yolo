@@ -15,6 +15,7 @@ import { IRootReducers } from '../../redux/rootReducer';
 import { defaultSize } from '../../services/ui';
 import { mapFieldErrors } from '../../utils/mapFieldError';
 import * as yup from 'yup';
+import RenderError from 'components/RenderError';
 const Register = () => {
   const auth = useSelector((state: IRootReducers) => state.auth);
   const dispatch = useDispatch();
@@ -28,9 +29,16 @@ const Register = () => {
     checkData();
   }, []);
   const schema = yup.object({
-    username: yup.string().required('Please enter user name'),
+    username: yup
+      .string()
+      .trim('Username Or Email must be not includes space')
+      .strict(true)
+      .required('Please enter user name'),
     email: yup.string().email('Email is incorrect').required('Please enter email'),
-    password: yup.string().min(5, 'Password must be least 5 characters').required('please enter password'),
+    password: yup
+      .string()
+      .min(5, 'Password must be least 5 characters')
+      .required('please enter password'),
   });
   const initialValues: RegisterInput = {
     username: '',
@@ -47,18 +55,6 @@ const Register = () => {
     }
   }, [auth]);
 
-  const renderError = (isValid: boolean) => {
-    let body = null;
-    if (isValid) return body;
-    for (let i in error) {
-      body = (
-        <div className="my-4">
-          <h4 className="text-red-600">{error[i]}</h4>
-        </div>
-      );
-    }
-    return body;
-  };
   if (auth?.user) router.push('/');
 
   return (
@@ -72,9 +68,21 @@ const Register = () => {
               <InputField name="username" placeholder="Username" label="Username" type="text" />
               <InputField name="email" placeholder="Email" label="Email" type="text" />
               <InputField name="password" placeholder="Password" label="Password" type="password" />
-              {Object.keys(error).length > 0 && renderError(isValid)}
-              <Button loading={auth.loading} disabled={auth.loading || !isValid} className="btn w-[100%] mb-2" type="submit">
-                {isSubmitting ? <AiOutlineLoading size={defaultSize} className="mx-auto text-md  animate-rotate" /> : 'Register'}
+              {Object.keys(error).length > 0 && <RenderError error={error} isValid={isValid} />}
+              <Button
+                loading={auth.loading}
+                disabled={auth.loading || !isValid}
+                className="btn w-[100%] mb-2"
+                type="submit"
+              >
+                {isSubmitting ? (
+                  <AiOutlineLoading
+                    size={defaultSize}
+                    className="mx-auto text-md  animate-rotate"
+                  />
+                ) : (
+                  'Register'
+                )}
               </Button>
               <div className="flex items-center justify-between">
                 <Link

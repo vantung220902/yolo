@@ -1,26 +1,38 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
-import { hiddenLoading, hiddenModal, showLoading } from '../commonRedux/actions';
+import { call, takeLatest } from 'redux-saga/effects';
+import { callApi } from 'redux/commonRedux/callApi';
+import { toastifyErrorSaga } from 'redux/commonRedux/toastifyFailureRedux';
 import { Apis } from './../../services/api';
-import { addOrderAsync } from './action';
+import { addOrderAsync, getOrderAsync } from './action';
+import { ResponseListProductOrder } from './type';
 
 function* addOrder(api: any, action: ReturnType<typeof addOrderAsync.request>) {
-    yield put(showLoading())
-    try {
-        const response: ResponseGenerator = yield call(api, action.payload);
-        const data: IResponse = response.data;
-        if (data.success) {
-            yield put(addOrderAsync.success({ ...data, productIds: action.payload.productId }))
-            yield put(hiddenModal())
-        }
-    } catch (error: any) {
-        console.log(error)
-        yield put(addOrderAsync.failure(error))
-    }
-    yield put(hiddenLoading())
+  yield call(
+    callApi as any,
+    api,
+    {
+      asyncAction: addOrderAsync,
+      responseExtractor: (res: any) => ({ ...res, productIds: action.payload.productId }),
+      onFailure: toastifyErrorSaga,
+    },
+    action.payload,
+  );
+}
+function* getOrder(api: any, action: ReturnType<typeof getOrderAsync.request>) {
+  yield call(
+    callApi as any,
+    api,
+    {
+      asyncAction: getOrderAsync,
+      responseExtractor: (res: ResponseListProductOrder) => res.data,
+      onFailure: toastifyErrorSaga,
+    },
+    action.payload,
+  );
 }
 
 export default function cartSaga(apiInstance: Apis) {
-    return [
-        takeLatest(addOrderAsync.request, addOrder, apiInstance.addOrder),
-    ]
+  return [
+    takeLatest(addOrderAsync.request, addOrder, apiInstance.addOrder),
+    takeLatest(getOrderAsync.request, getOrder, apiInstance.getOrder),
+  ];
 }
