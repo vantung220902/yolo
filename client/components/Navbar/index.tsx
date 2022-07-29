@@ -78,7 +78,7 @@ const Navbar = () => {
         ))}
       </div>
       <div className="flex items-center justify-center">
-        <Image src={Logo} alt="anh" width={120} height={60} objectFit="contain" />
+        <Image src={Logo} alt="anh" width={200} height={100} objectFit="contain" />
       </div>
       <div className={`flex items-center justify-between w-[${isActiveSearch ? '60%' : '50%'}] ml-auto z-10`}>
         <div className="mr-2 flex items-center">
