@@ -210,9 +210,10 @@ export const getStaticProps = async ({ params }: { params: { id: string } }) => 
       ? `https://stormy-beach-03479.herokuapp.com/api/product/getById?id=${params.id}`
       : `http://localhost:4000/api/product/getById?id=${params.id}`,
   );
+  if (product === null) return;
   return {
     props: {
-      product,
+      product: product ? product : {},
     },
     revalidate: 1,
   };
