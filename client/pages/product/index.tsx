@@ -212,7 +212,11 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
   );
 };
 export const getStaticProps = async () => {
-  const categories = await axios.get('http://localhost:4000/api/category/gets');
+  const categories = await axios.get(
+    process.env.NODE_ENV === 'production'
+      ? 'https://stormy-beach-03479.herokuapp.com/api/category/gets'
+      : 'http://localhost:4000/api/category/gets',
+  );
   return {
     props: {
       categories: categories.data,

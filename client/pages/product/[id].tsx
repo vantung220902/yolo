@@ -5,11 +5,7 @@ import { useDispatch } from 'react-redux';
 import { addCart } from '../../redux/cartRedux/action';
 import Layout from '../../components/Layout';
 import { ICartLocal } from '../../redux/cartRedux/type';
-import {
-  IProduct,
-  ResponseListProduct,
-  ResponseProduct,
-} from '../../redux/productRedux/type';
+import { IProduct, ResponseListProduct, ResponseProduct } from '../../redux/productRedux/type';
 import { listColor2, listSize } from '../../services/localData';
 import { defaultSize } from '../../services/ui';
 
@@ -55,27 +51,18 @@ const ProductPage = ({ product }: { product: IProduct }) => {
                     setImgShow(index);
                   }}
                 >
-                  <img
-                    src={image}
-                    alt="anh"
-                    className="w-[180px] h-[250px] object-contain"
-                  />
+                  <img src={image} alt="anh" className="w-[180px] h-[250px] object-contain" />
                 </li>
               ))}
             </ul>
           </div>
           <div className="col-span-4">
-            <img
-              src={images && images[imgShow]}
-              className="w-full h-screen object-contain"
-            />
+            <img src={images && images[imgShow]} className="w-full h-screen object-contain" />
           </div>
           <div className="col-span-6 relative">
             <h5 className="mb-4 text-black font-bold">Description Product</h5>
             <p className="my-2 text-justify">
-              {checkDescription
-                ? product?.description
-                : product?.description.slice(0, 350)}
+              {checkDescription ? product?.description : product?.description.slice(0, 350)}
             </p>
             <button
               className="absolute top-[86%] left-[50%] btn w-40 h-12 bg-primary"
@@ -192,7 +179,17 @@ const ProductPage = ({ product }: { product: IProduct }) => {
 
 export const getStaticPaths = async () => {
   const response: AxiosResponse<ResponseListProduct, any> = await axios.get(
-    'http://localhost:4000/api/product/gets?limit=4&q=',
+    process.env.NODE_ENV === 'production'
+      ? 'https://stormy-beach-03479.herokuapp.com/api/product/gets?limit=4&q='
+      : 'http://localhost:4000/api/product/gets?limit=4&q=',
+    {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: 0,
+        Accept: 'application/json',
+      },
+    },
   );
   const paths = response.data?.products?.map((item) => ({
     params: {
@@ -205,15 +202,13 @@ export const getStaticPaths = async () => {
   };
 };
 
-export const getStaticProps = async ({
-  params,
-}: {
-  params: { id: string };
-}) => {
+export const getStaticProps = async ({ params }: { params: { id: string } }) => {
   const {
     data: { product },
   }: AxiosResponse<ResponseProduct, any> = await axios.get(
-    `http://localhost:4000/api/product/getById?id=${params.id}`,
+    process.env.NODE_ENV === 'production'
+      ? `https://stormy-beach-03479.herokuapp.com/api/product/getById?id=${params.id}`
+      : `http://localhost:4000/api/product/getById?id=${params.id}`,
   );
   return {
     props: {

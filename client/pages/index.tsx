@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { debounce } from 'lodash';
 import { useEffect, useRef } from 'react';
 import { AiFillCreditCard, AiOutlineHeart, AiOutlineShopping, AiOutlineStar } from 'react-icons/ai';
@@ -40,7 +40,10 @@ const Home = ({ products }: { products: ResponseListProduct }) => {
   const dispatch = useDispatch();
   const handleLoadMore = (arg: IProductReducer) => {
     const height = screen.height;
-    if (arg.hasMore && (document.documentElement.scrollTop > height / 3 || document.body.scrollTop > height / 3)) {
+    if (
+      arg.hasMore &&
+      (document.documentElement.scrollTop > height / 3 || document.body.scrollTop > height / 3)
+    ) {
       dispatch(
         loadMoreAsync.request({
           limit: 4,
@@ -54,7 +57,10 @@ const Home = ({ products }: { products: ResponseListProduct }) => {
 
   const debounceLoadMore = useRef(debounce((product) => handleLoadMore(product), 700)).current;
   useEffect(() => {
-    window.addEventListener('scroll', debounceLoadMore.bind(null, product.products.length > 0 ? product : products));
+    window.addEventListener(
+      'scroll',
+      debounceLoadMore.bind(null, product.products.length > 0 ? product : products),
+    );
     return () => window.removeEventListener('scroll', debounceLoadMore);
   }, [product]);
   return (
@@ -71,7 +77,7 @@ const Home = ({ products }: { products: ResponseListProduct }) => {
           {products?.products?.map((item) => {
             return <Product product={item} key={item.id} />;
           })}
-          {product.products?.map((item) => {
+          {product?.products?.map((item) => {
             return <Product product={item} key={item.id} />;
           })}
         </div>
@@ -82,7 +88,19 @@ const Home = ({ products }: { products: ResponseListProduct }) => {
 };
 
 export const getStaticProps = async () => {
-  const response = await axios.get('http://localhost:4000/api/product/gets?limit=4&q=');
+  const response: AxiosResponse<ResponseListProduct, any> = await axios.get(
+    process.env.NODE_ENV === 'production'
+      ? 'https://stormy-beach-03479.herokuapp.com/api/product/gets?limit=4&q='
+      : 'http://localhost:4000/api/product/gets?limit=4&q=',
+    {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: 0,
+        Accept: 'application/json',
+      },
+    },
+  );
   return {
     props: {
       products: response.data,
