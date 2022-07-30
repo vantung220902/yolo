@@ -1,4 +1,4 @@
-import { Product } from './../../../server/src/entities/Product';
+import { IProduct } from '../productRedux/type';
 export interface ICartLocal {
     productId: string;
     image: string;
@@ -36,7 +36,7 @@ export interface IProductOrder {
     deliveryDate: Date;
     note: string;
     address: string;
-    products: Product;
+    products: IProduct;
   }
   export interface IOrder {
     id: number;

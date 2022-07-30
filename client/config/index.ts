@@ -1,5 +1,6 @@
 const configs = {
-    API_END_POINT: 'http://localhost:4000/api/',
+    API_END_POINT: process.env.NODE_ENV ==='production' ? 'https://stormy-beach-03479.herokuapp.com/api/' : 
+    'http://localhost:4000/api/',
     ACCESS_TOKEN: 'ACCESS_TOKEN',
     REFRESH_TOKEN: 'REFRESH_TOKEN',
     LIMIT_LOAD_PRODUCT: 4,
