@@ -100,14 +100,14 @@ export class ProductController {
       };
       let lastProduct: Product[] = [];
       const isNumber = !isNaN(parseInt(q as string, 10));
-      if (cursor !== undefined) {
+      if (cursor) {
         array = [
           isNumber
             ? {
                 categoryId: parseInt(q as string, 10),
                 createdAt: LessThan(cursor),
               }
-            : null,
+            : {},
           { title: Like(`%${q}%`), createdAt: LessThan(cursor) },
           { color: Like(`%${q}%`), createdAt: LessThan(cursor) },
           { description: Like(`%${q}%`), createdAt: LessThan(cursor) },
@@ -119,7 +119,7 @@ export class ProductController {
         });
       } else {
         array = [
-          isNumber ? { categoryId: parseInt(q as string, 10) } : null,
+          isNumber ? { categoryId: parseInt(q as string, 10) } : {},
           { title: Like(`%${q}%`) },
           { color: Like(`%${q}%`) },
           { description: Like(`%${q}%`) },
