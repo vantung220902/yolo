@@ -82,8 +82,14 @@ export class ProductController {
     res: Response
   ): Promise<Response<ResponseListProduct, Record<any, ResponseListProduct>>> {
     try {
-      const { limit, cursor, q } = req.query;
-
+      const { limit, cursor, q = "" } = req.query;
+      if (!limit || isNaN(parseInt(limit as string, 10))) {
+        return res.status(401).json({
+          code: 401,
+          success: false,
+          message: "Limit is required",
+        });
+      }
       const realLimit = Math.min(10, parseInt(limit as string, 10));
       let array = [];
       const findOptions: { [key: string]: any } = {
@@ -94,7 +100,7 @@ export class ProductController {
       };
       let lastProduct: Product[] = [];
       const isNumber = !isNaN(parseInt(q as string, 10));
-      if (cursor) {
+      if (cursor !== undefined) {
         array = [
           isNumber
             ? {

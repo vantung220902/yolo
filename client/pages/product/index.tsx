@@ -216,6 +216,14 @@ export const getStaticProps = async () => {
     process.env.NODE_ENV === 'production'
       ? 'https://stormy-beach-03479.herokuapp.com/api/category/gets'
       : 'http://localhost:4000/api/category/gets',
+    {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: 0,
+        Accept: 'application/json',
+      },
+    },
   );
   return {
     props: {

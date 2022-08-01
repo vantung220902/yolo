@@ -8,8 +8,12 @@ import { ICartLocal } from '../../redux/cartRedux/type';
 import { IProduct, ResponseListProduct, ResponseProduct } from '../../redux/productRedux/type';
 import { listColor2, listSize } from '../../services/localData';
 import { defaultSize } from '../../services/ui';
+import React from 'react';
+type IProps = {
+  product: IProduct;
+};
 
-const ProductPage = ({ product }: { product: IProduct }) => {
+const ProductPage: React.FC<IProps> = ({ product }) => {
   const [number, setNumber] = useState(1);
   const [images, setImages] = useState<string[]>([]);
   const [checkDescription, setCheckDescription] = useState(false);
@@ -20,7 +24,7 @@ const ProductPage = ({ product }: { product: IProduct }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     const tmpImages = [];
-    const listImage = product && product.image.split(';');
+    const listImage = product && product?.image.split(';');
     for (let i = 0; i < listImage?.length - 1; i++) {
       tmpImages.push(listImage[i]);
     }
@@ -29,10 +33,10 @@ const ProductPage = ({ product }: { product: IProduct }) => {
 
   const handleAddCart = () => {
     const cart: ICartLocal = {
-      productId: product.id,
+      productId: product?.id,
       image: images[0],
-      title: ` ${product.title} - ${listSize[activeSize]} - ${listColor2[activeColor]}`,
-      price: product.price,
+      title: ` ${product?.title} - ${listSize[activeSize]} - ${listColor2[activeColor]}`,
+      price: product?.price,
       total: number,
     };
     dispatch(addCart(cart));
@@ -191,6 +195,11 @@ export const getStaticPaths = async () => {
       },
     },
   );
+  if (!response.data.success)
+    return {
+      paths: [],
+      fallback: true,
+    };
   const paths = response.data?.products?.map((item) => ({
     params: {
       id: `${item.id}`,
@@ -209,11 +218,19 @@ export const getStaticProps = async ({ params }: { params: { id: string } }) => 
     process.env.NODE_ENV === 'production'
       ? `https://stormy-beach-03479.herokuapp.com/api/product/getById?id=${params.id}`
       : `http://localhost:4000/api/product/getById?id=${params.id}`,
+    {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: 0,
+        Accept: 'application/json',
+      },
+    },
   );
   if (product === null) return;
   return {
     props: {
-      product: product ? product : {},
+      product: product !== null ? product : {},
     },
     revalidate: 1,
   };

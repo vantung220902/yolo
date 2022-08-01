@@ -31,14 +31,14 @@ export const validateRegisterInput = (registerInput: RegisterInput) => {
     return null;
 }
 export const validateLoginInput = (loginInput: LoginInput) => {
-    if (loginInput.usernameOrEmail.length < 3)
+    if (loginInput.usernameOrEmail?.length < 3)
         return {
             message: 'Invalid username',
             error: [
                 { field: 'usernameOrEmail', message: 'Length must greater than 2 characters' }
             ]
         }
-    if (loginInput.password.length < 3)
+    if (loginInput.password?.length < 3)
         return {
             message: 'Invalid password',
             error: [
