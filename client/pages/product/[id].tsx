@@ -1,14 +1,12 @@
-import axios, { AxiosResponse } from 'axios';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useDispatch } from 'react-redux';
-import { addCart } from '../../redux/cartRedux/action';
 import Layout from '../../components/Layout';
+import { addCart } from '../../redux/cartRedux/action';
 import { ICartLocal } from '../../redux/cartRedux/type';
-import { IProduct, ResponseListProduct, ResponseProduct } from '../../redux/productRedux/type';
+import { IProduct } from '../../redux/productRedux/type';
 import { listColor2, listSize } from '../../services/localData';
 import { defaultSize } from '../../services/ui';
-import React from 'react';
 type IProps = {
   product: IProduct;
 };
@@ -181,59 +179,59 @@ const ProductPage: React.FC<IProps> = ({ product }) => {
   );
 };
 
-export const getStaticPaths = async () => {
-  const response: AxiosResponse<ResponseListProduct, any> = await axios.get(
-    process.env.NODE_ENV === 'production'
-      ? 'https://stormy-beach-03479.herokuapp.com/api/product/gets?limit=4&q='
-      : 'http://localhost:4000/api/product/gets?limit=4&q=',
-    {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: 0,
-        Accept: 'application/json',
-      },
-    },
-  );
-  if (!response.data.success)
-    return {
-      paths: [],
-      fallback: true,
-    };
-  const paths = response.data?.products?.map((item) => ({
-    params: {
-      id: `${item.id}`,
-    },
-  }));
-  return {
-    paths,
-    fallback: true,
-  };
-};
+// export const getStaticPaths = async () => {
+//   const response: AxiosResponse<ResponseListProduct, any> = await axios.get(
+//     process.env.NODE_ENV === 'production' && false && false
+//       ? 'https://stormy-beach-03479.herokuapp.com/api/product/gets?limit=4&q='
+//       : 'http://localhost:4000/api/product/gets?limit=4&q=',
+//     {
+//       headers: {
+//         'Cache-Control': 'no-cache',
+//         Pragma: 'no-cache',
+//         Expires: 0,
+//         Accept: 'application/json',
+//       },
+//     },
+//   );
+//   if (!response.data.success)
+//     return {
+//       paths: [],
+//       fallback: true,
+//     };
+//   const paths = response.data?.products?.map((item) => ({
+//     params: {
+//       id: `${item.id}`,
+//     },
+//   }));
+//   return {
+//     paths,
+//     fallback: true,
+//   };
+// };
 
-export const getStaticProps = async ({ params }: { params: { id: string } }) => {
-  const {
-    data: { product },
-  }: AxiosResponse<ResponseProduct, any> = await axios.get(
-    process.env.NODE_ENV === 'production'
-      ? `https://stormy-beach-03479.herokuapp.com/api/product/getById?id=${params.id}`
-      : `http://localhost:4000/api/product/getById?id=${params.id}`,
-    {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: 0,
-        Accept: 'application/json',
-      },
-    },
-  );
-  if (product === null) return;
-  return {
-    props: {
-      product: product !== null ? product : {},
-    },
-    revalidate: 1,
-  };
-};
+// export const getStaticProps = async ({ params }: { params: { id: string } }) => {
+//   const {
+//     data: { product },
+//   }: AxiosResponse<ResponseProduct, any> = await axios.get(
+//     process.env.NODE_ENV === 'production' && false
+//       ? `https://stormy-beach-03479.herokuapp.com/api/product/getById?id=${params.id}`
+//       : `http://localhost:4000/api/product/getById?id=${params.id}`,
+//     {
+//       headers: {
+//         'Cache-Control': 'no-cache',
+//         Pragma: 'no-cache',
+//         Expires: 0,
+//         Accept: 'application/json',
+//       },
+//     },
+//   );
+//   if (product === null) return;
+//   return {
+//     props: {
+//       product: product !== null ? product : {},
+//     },
+//     revalidate: 1,
+//   };
+// };
 
 export default ProductPage;

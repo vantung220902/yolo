@@ -1,4 +1,3 @@
-import axios, { AxiosResponse } from 'axios';
 import { debounce } from 'lodash';
 import { useEffect, useRef } from 'react';
 import { AiFillCreditCard, AiOutlineHeart, AiOutlineShopping, AiOutlineStar } from 'react-icons/ai';
@@ -87,25 +86,25 @@ const Home = ({ products }: { products: ResponseListProduct }) => {
   );
 };
 
-export const getStaticProps = async () => {
-  const response: AxiosResponse<ResponseListProduct, any> = await axios.get(
-    process.env.NODE_ENV === 'production'
-      ? 'https://stormy-beach-03479.herokuapp.com/api/product/gets?limit=4&q='
-      : 'http://localhost:4000/api/product/gets?limit=4&q=',
-    {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: 0,
-        Accept: 'application/json',
-      },
-    },
-  );
-  return {
-    props: {
-      products: response.data,
-    },
-  };
-};
+// export const getStaticProps = async () => {
+//   const response: AxiosResponse<ResponseListProduct, any> = await axios.get(
+//     process.env.NODE_ENV === 'production' && false
+//       ? 'https://stormy-beach-03479.herokuapp.com/api/product/gets?limit=4&q='
+//       : 'http://localhost:4000/api/product/gets?limit=4&q=',
+//     {
+//       headers: {
+//         'Cache-Control': 'no-cache',
+//         Pragma: 'no-cache',
+//         Expires: 0,
+//         Accept: 'application/json',
+//       },
+//     },
+//   );
+//   return {
+//     props: {
+//       products: response.data,
+//     },
+//   };
+// };
 
 export default Home;

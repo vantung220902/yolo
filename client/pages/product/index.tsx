@@ -1,7 +1,8 @@
-import axios from 'axios';
+import { debounce } from 'lodash';
 import { useEffect, useRef, useState } from 'react';
 import { BsFillEmojiLaughingFill } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
+import { IProductReducer } from 'redux/productRedux/reducer';
 import Layout from '../../components/Layout';
 import Product from '../../components/Product';
 import { ResponseListCategory } from '../../redux/categoryRedux/type';
@@ -9,8 +10,6 @@ import { loadMoreAsync, resetProduct } from '../../redux/productRedux/actions';
 import { IRootReducers } from '../../redux/rootReducer';
 import { listColor, listSize } from '../../services/localData';
 import { defaultSize } from '../../services/ui';
-import { debounce } from 'lodash';
-import { IProductReducer } from 'redux/productRedux/reducer';
 const Category = ({ categories }: { categories: ResponseListCategory }) => {
   //redux
   const data = useSelector((state: IRootReducers) => state.product);
@@ -211,25 +210,25 @@ const Category = ({ categories }: { categories: ResponseListCategory }) => {
     </Layout>
   );
 };
-export const getStaticProps = async () => {
-  const categories = await axios.get(
-    process.env.NODE_ENV === 'production'
-      ? 'https://stormy-beach-03479.herokuapp.com/api/category/gets'
-      : 'http://localhost:4000/api/category/gets',
-    {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: 0,
-        Accept: 'application/json',
-      },
-    },
-  );
-  return {
-    props: {
-      categories: categories.data,
-    },
-  };
-};
+// export const getStaticProps = async () => {
+//   const categories = await axios.get(
+//     process.env.NODE_ENV === 'production' && false
+//       ? 'https://stormy-beach-03479.herokuapp.com/api/category/gets'
+//       : 'http://localhost:4000/api/category/gets',
+//     {
+//       headers: {
+//         'Cache-Control': 'no-cache',
+//         Pragma: 'no-cache',
+//         Expires: 0,
+//         Accept: 'application/json',
+//       },
+//     },
+//   );
+//   return {
+//     props: {
+//       categories: categories.data,
+//     },
+//   };
+// };
 
 export default Category;
