@@ -14,7 +14,7 @@ import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 import route from "./routes";
 import { mongoose } from "@typegoose/typegoose";
-import { __prod__ } from "./constant";
+import { __prod__, SSL } from "./constant";
 const main = async () => {
   const connection = await createConnection({
     type: "postgres",
@@ -25,7 +25,7 @@ const main = async () => {
           username: process.env.DB_USERNAME,
           password: process.env.DB_PASSWORD,
         }),
-    ...(__prod__
+    ...(SSL
       ? {
           extra: {
             ssl: {
@@ -46,12 +46,17 @@ const main = async () => {
   const app = express();
 
   app.use(morgan("dev"));
+  // app.use(
+  //   cors({
+  //     origin: __prod__
+  //       ? process.env.CORS_ORIGIN_PROD
+  //       : process.env.CORS_ORIGIN_DEV,
+  //     credentials: true,
+  //   })
+  // );
   app.use(
     cors({
-      origin: __prod__
-        ? process.env.CORS_ORIGIN_PROD
-        : process.env.CORS_ORIGIN_DEV,
-      credentials: true,
+      origin: "*",
     })
   );
   app.use(cookieParser());
